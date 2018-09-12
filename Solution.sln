@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DEMOS", "DEMOS", "{75A6D539-8458-45DF-BE47-1376FB54C16E}"
 EndProject
@@ -104,6 +104,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E10 - ARBB", "E10 - ARBB\E10 - ARBB.vcxproj", "{9557AEB2-A186-4645-B8D0-678D133C2EFA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E11 - EntityManager", "E11 - EntityManager\E11 - EntityManager.vcxproj", "{870B329D-6DED-48D2-8E86-0893E3BB8DAB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E03 - Shaders", "E03 - Shaders\E03 - Shaders.vcxproj", "{80756780-CD3F-419E-990E-F565E97E1469}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -277,6 +279,10 @@ Global
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Debug|x86.Build.0 = Debug|Win32
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Release|x86.ActiveCfg = Release|Win32
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Release|x86.Build.0 = Release|Win32
+		{80756780-CD3F-419E-990E-F565E97E1469}.Debug|x86.ActiveCfg = Debug|Win32
+		{80756780-CD3F-419E-990E-F565E97E1469}.Debug|x86.Build.0 = Debug|Win32
+		{80756780-CD3F-419E-990E-F565E97E1469}.Release|x86.ActiveCfg = Release|Win32
+		{80756780-CD3F-419E-990E-F565E97E1469}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,6 +329,7 @@ Global
 		{0BFF89F3-1A79-4B83-A0EB-7C16FDA662E1} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{9557AEB2-A186-4645-B8D0-678D133C2EFA} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
+		{80756780-CD3F-419E-990E-F565E97E1469} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36545A6-DAAA-4856-BDB7-57C29F88BC6B}
