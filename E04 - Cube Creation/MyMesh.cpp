@@ -24,10 +24,12 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		float nextDegree = degreeInterval * i;
+		std::cout << "Next Degree: " << nextDegree << std::endl;
 		// x = cos(degree) y = sin(degree)
 		// to get radians divide by 180 multiply by pi
 		leftPoint = rightPoint;
-		rightPoint = vector3(std::cos(nextDegree), std::sin(nextDegree), 0);
+		rightPoint = vector3(3.1415f * (std::cos(nextDegree) / 180.0f), 3.1415f * (std::sin(nextDegree) / 180.0f), 0);
+		std::cout << rightPoint.x << " " << rightPoint.y << " " << std::endl;
 
 		AddTri(centerPoint, leftPoint, rightPoint);
 	};
