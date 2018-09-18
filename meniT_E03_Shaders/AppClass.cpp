@@ -4,6 +4,7 @@ AppClass::AppClass(std::string a_windowName) : m_sWindowName(a_windowName) {}
 AppClass::AppClass(AppClass const& input) {}
 AppClass& AppClass::operator=(AppClass const& input) { return *this; }
 AppClass::~AppClass(void){ Release(); }
+bool useCompl = false;
 void AppClass::Run(void)
 {
 	//Initialize the system with the fields recollected by the constructor
@@ -113,8 +114,16 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9))
+	{
+		std::cout << "HELLO" << std::endl;
+		useCompl = !useCompl;
+		//m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)) {
+	//	useCompl = !useCompl;
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+	}
 }
 void AppClass::Display(void)
 {
@@ -123,7 +132,12 @@ void AppClass::Display(void)
 
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
+	GLuint isComp = glGetUniformLocation(m_uShaderProgramID, "isComp");
+
+
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
+	glUniform1i(isComp, useCompl);
+
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);

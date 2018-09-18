@@ -33,6 +33,7 @@ void Application::Display(void)
 
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
+
 	
 	//draw gui
 	DrawGUI();
