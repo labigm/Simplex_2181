@@ -16,19 +16,19 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
-	vector3 leftPoint = vector3(a_fRadius, 0, 0);
-	vector3 rightPoint;
+	vector3 leftPoint;
+	vector3 rightPoint = vector3(a_fRadius * (std::cos(0) / 180.0f), a_fRadius * (std::sin(0) / 180.0f), 0);
 	vector3 centerPoint = vector3(0, 0, 0);
-	double degreeInterval = 360 / a_nSubdivisions;
+	double degreeInterval = 360.0f / a_nSubdivisions;
 
-	for (int i = 0; i < a_nSubdivisions; i++)
+	for (int i = 0; i <= a_nSubdivisions; i++)
 	{
 		float nextDegree = degreeInterval * i;
 		std::cout << "Next Degree: " << nextDegree << std::endl;
 		// x = cos(degree) y = sin(degree)
 		// to get radians divide by 180 multiply by pi
 		leftPoint = rightPoint;
-		rightPoint = vector3(3.1415f * (std::cos(nextDegree) / 180.0f), 3.1415f * (std::sin(nextDegree) / 180.0f), 0);
+		rightPoint = vector3( a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0);
 		std::cout << rightPoint.x << " " << rightPoint.y << " " << std::endl;
 
 		AddTri(centerPoint, leftPoint, rightPoint);
