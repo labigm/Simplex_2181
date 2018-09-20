@@ -13,6 +13,7 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		a_nSubdivisions = 360;
 
 	/*
+		I'VE GOT MY EYES ON YOU ASH
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
@@ -34,7 +35,7 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		// we already know 2 points on the triangle, it is calculated by the previous triangle
 		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
 		leftPoint = rightPoint;
-		rightPoint = vector3( a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0);
+		rightPoint = vector3( a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)),0);
 		std::cout << rightPoint.x << " " << rightPoint.y << " " << std::endl;
 
 		AddTri(centerPoint, leftPoint, rightPoint);
