@@ -19,7 +19,7 @@ using namespace Simplex;
 #include "SFML\Window.hpp"
 #include "SFML\Graphics.hpp"
 #include "SFML\OpenGL.hpp"
-
+#include <cmath>
 #endif //__DEFINITIONS_H_
 
 /*
