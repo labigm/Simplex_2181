@@ -2,7 +2,7 @@
 void SDLApp::InitVariables(void)
 {
 	//setup camera position
-	m_pCameraMngr->SetPositionTargetAndUp(
+	m_pCameraMngr->SetPositionTargetAndUpward(
 		vector3(0.0f, 2.5f, 15.0f),//Camera position
 		vector3(0.0f, 2.5f, 0.0f),//What I'm looking at
 		AXIS_Y);//What is up

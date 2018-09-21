@@ -5,7 +5,7 @@ void Application::InitVariables(void)
 	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 	//Set the position and target of the camera
-	m_pCameraMngr->SetPositionTargetAndUp(vector3(5.0f,3.0f,15.0f), ZERO_V3, AXIS_Y);
+	m_pCameraMngr->SetPositionTargetAndUpward(vector3(5.0f,3.0f,15.0f), ZERO_V3, AXIS_Y);
 
 	m_pModel = new Simplex::Model();
 	m_pModel->Load("Sorted\\WallEye.bto");

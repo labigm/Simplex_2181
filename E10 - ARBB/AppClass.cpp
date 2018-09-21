@@ -6,7 +6,7 @@ void Application::InitVariables(void)
 	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 	//Set the position and target of the camera
-	m_pCameraMngr->SetPositionTargetAndUp(	vector3(0.0f, 3.0f, 13.0f), //Position
+	m_pCameraMngr->SetPositionTargetAndUpward(	vector3(0.0f, 3.0f, 13.0f), //Position
 											vector3(0.0f, 3.0f, 12.0f),	//Target
 											AXIS_Y );					//Up
 

@@ -10,7 +10,7 @@ void Camera::Init(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
 
 	m_bInternalCalculation = true;
 
-	return SetPositionTargetAndUp(a_v3Position, a_v3Target, a_v3Upward);
+	return SetPositionTargetAndUpward(a_v3Position, a_v3Target, a_v3Upward);
 }
 void Camera::Swap(Camera& other)
 {
@@ -97,11 +97,11 @@ void Camera::SetCameraMode(BTO_CAMERAMODE a_nMode){ m_nMode = a_nMode; ResetCame
 BTO_CAMERAMODE Camera::GetCameraMode(void){ return m_nMode; }
 void Camera::SetPosition(vector3 a_v3Position)
 {
-	return SetPositionTargetAndUp(a_v3Position, m_v3Target, m_v3Upward);
+	return SetPositionTargetAndUpward(a_v3Position, m_v3Target, m_v3Upward);
 }
 void Camera::SetTarget(vector3 a_v3Target)
 {
-	return SetPositionTargetAndUp(m_v3Position, a_v3Target, m_v3Upward);
+	return SetPositionTargetAndUpward(m_v3Position, a_v3Target, m_v3Upward);
 }
 matrix4 Camera::GetMVP(matrix4 a_m4ModelToWorld)
 {
@@ -257,7 +257,7 @@ void Camera::ChangeRoll(float a_fDegree)
 {
 	//Code removed for assignment purposes
 }
-void Camera::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
+void Camera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
 {
 	m_v3Position = a_v3Position;
 	m_v3Target = a_v3Target;

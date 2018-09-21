@@ -32,7 +32,7 @@ Simplex::MyCamera::MyCamera()
 Simplex::MyCamera::MyCamera(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
 {
 	Init(); //Initialize the object
-	SetPositionTargetAndUp(a_v3Position, a_v3Target, a_v3Upward); //set the position, target and up
+	SetPositionTargetAndUpward(a_v3Position, a_v3Target, a_v3Upward); //set the position, target and up
 }
 
 Simplex::MyCamera::MyCamera(MyCamera const& other)
@@ -60,7 +60,7 @@ MyCamera& Simplex::MyCamera::operator=(MyCamera const& other)
 	if (this != &other)
 	{
 		Release();
-		SetPositionTargetAndUp(other.m_v3Position, other.m_v3Target, other.m_v3Up);
+		SetPositionTargetAndUpward(other.m_v3Position, other.m_v3Target, other.m_v3Up);
 		MyCamera temp(other);
 		Swap(temp);
 	}
@@ -125,7 +125,7 @@ void Simplex::MyCamera::ResetCamera(void)
 	CalculateViewMatrix();
 }
 
-void Simplex::MyCamera::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
+void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward)
 {
 	m_v3Position = a_v3Position;
 	m_v3Target = a_v3Target;

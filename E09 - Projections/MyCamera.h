@@ -196,7 +196,7 @@ public:
 	-	vector3 a_v3Upward -> What is up
 	OUTPUT: ---
 	*/
-	void SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward = AXIS_Y);
+	void SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward = AXIS_Y);
 
 	/*
 	USAGE: Calculate what the camera should be looking at with the values of position target and up

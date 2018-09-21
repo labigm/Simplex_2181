@@ -131,7 +131,7 @@ public:
 	int a_nIndex = -1 -> Index of the camera, -1 will use the active camera's index
 	OUTPUT: ---
 	*/
-	void SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward, int a_nIndex = -1);
+	void SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward, int a_nIndex = -1);
 	/*
 	USAGE: Translates from mouse coordinates (inside of window) to world space
 	ARGUMENTS:

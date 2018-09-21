@@ -6,7 +6,7 @@ void Application::InitVariables(void)
 	//m_pWindow->setPosition(sf::Vector2i(710, 0));
 
 	//Set the position and target of the camera
-	m_pCameraMngr->SetPositionTargetAndUp(
+	m_pCameraMngr->SetPositionTargetAndUpward(
 		vector3(0.0f, 0.0f, 100.0f), //Position
 		vector3(0.0f, 0.0f, 99.0f),	//Target
 		AXIS_Y);					//Up

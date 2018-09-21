@@ -12,7 +12,7 @@ void AppClass::InitWindow(String a_sWindowName)
 void AppClass::InitVariables(void)
 {
 	//Set the camera position
-	m_pCameraMngr->SetPositionTargetAndUp(
+	m_pCameraMngr->SetPositionTargetAndUpward(
 		vector3(0.0f, 0.0f, 15.0f),//Camera position
 		vector3(0.0f, 0.0f, 0.0f),//What I'm looking at
 		AXIS_Y);//What is up

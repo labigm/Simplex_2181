@@ -277,13 +277,13 @@ void CameraManager::ChangeRoll(float a_fDegree, int a_nIndex)
 	}
 	return m_lCamera[m_uActiveCamera]->ChangeRoll(a_fDegree);
 }
-void CameraManager::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward, int a_nIndex)
+void CameraManager::SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward, int a_nIndex)
 {
 	if (static_cast<uint>(a_nIndex) <= m_uCameraCount)
 	{
-		return m_lCamera[a_nIndex]->SetPositionTargetAndUp(a_v3Position, a_v3Target, a_v3Upward);
+		return m_lCamera[a_nIndex]->SetPositionTargetAndUpward(a_v3Position, a_v3Target, a_v3Upward);
 	}
-	return m_lCamera[m_uActiveCamera]->SetPositionTargetAndUp(a_v3Position, a_v3Target, a_v3Upward);
+	return m_lCamera[m_uActiveCamera]->SetPositionTargetAndUpward(a_v3Position, a_v3Target, a_v3Upward);
 }
 vector3 CameraManager::GetClickOnWorldSpace(uint a_nMouseX, uint a_nMouseY, int a_nIndex)
 {

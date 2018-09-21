@@ -172,7 +172,7 @@ public:
 	ARGUMENTS:
 	OUTPUT:
 	*/
-	void SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward);
+	void SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward);
 	/*
 	USAGE: Translates from mouse coordinates (inside of window) to world space
 	ARGUMENTS:

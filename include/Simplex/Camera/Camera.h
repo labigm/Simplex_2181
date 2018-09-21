@@ -21,8 +21,8 @@ class SimplexDLL Camera
 	vector2 m_v2NearFar = vector2(0.001f, 1000.0f); //Near and Far planes
 
 	vector3 m_v3Position = vector3(0.0f, 0.0f, 5.0f); //Where my camera is located
-	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
-	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above
+	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What the camera is looking at
+	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera position
 
 	vector3 m_v3Forward = vector3(0.0f, 0.0f, -1.0f); //Line of sight
 	vector3 m_v3Upward = vector3(0.0f, 1.0f, 0.0f); //Up line
@@ -33,7 +33,7 @@ class SimplexDLL Camera
 	matrix4 m_m4Projection = matrix4(1.0f); //Projection Matrix
 	matrix4 m_m4View = matrix4(1.0f); //View matrix
 
-	bool m_bInternalCalculation = true;
+	bool m_bInternalCalculation = true; //use of this flag to accept other matrices instead of calculating them
 
 public:
 	/*
@@ -181,7 +181,7 @@ public:
 	-	vector3 a_v3Upward -> what up means
 	OUTPUT:
 	*/
-	void SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward);
+	void SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward);
 	/*
 	USAGE: Translates from mouse coordinates (inside of window) to world space
 	ARGUMENTS: 
