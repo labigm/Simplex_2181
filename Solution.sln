@@ -105,6 +105,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E10 - ARBB", "E10 - ARBB\E1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E11 - EntityManager", "E11 - EntityManager\E11 - EntityManager.vcxproj", "{870B329D-6DED-48D2-8E86-0893E3BB8DAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E04 - Mitch Steffens", "E04 - Mitch Steffens\E04 - Mitch Steffens.vcxproj", "{BF8FD076-F15E-46AC-9F7D-34D786967E18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -277,6 +279,10 @@ Global
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Debug|x86.Build.0 = Debug|Win32
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Release|x86.ActiveCfg = Release|Win32
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB}.Release|x86.Build.0 = Release|Win32
+		{BF8FD076-F15E-46AC-9F7D-34D786967E18}.Debug|x86.ActiveCfg = Debug|Win32
+		{BF8FD076-F15E-46AC-9F7D-34D786967E18}.Debug|x86.Build.0 = Debug|Win32
+		{BF8FD076-F15E-46AC-9F7D-34D786967E18}.Release|x86.ActiveCfg = Release|Win32
+		{BF8FD076-F15E-46AC-9F7D-34D786967E18}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,6 +329,7 @@ Global
 		{0BFF89F3-1A79-4B83-A0EB-7C16FDA662E1} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{9557AEB2-A186-4645-B8D0-678D133C2EFA} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
+		{BF8FD076-F15E-46AC-9F7D-34D786967E18} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36545A6-DAAA-4856-BDB7-57C29F88BC6B}
