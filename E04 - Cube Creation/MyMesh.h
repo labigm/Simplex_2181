@@ -17,6 +17,7 @@ class MyMesh
 	std::vector<vector3> m_lVertex;		//Composed vertex array
 	std::vector<vector3> m_lVertexPos;	//List of Vertices
 	std::vector<vector3> m_lVertexCol;	//List of Colors
+	std::vector<vector3> m_lVertexTris;
 
 	ShaderManager* m_pShaderMngr = nullptr;	//Shader Manager
 

@@ -16,6 +16,29 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
+	m_lVertexTris.clear();
+	
+	// Creates all the vertices with the given subdivisions
+	m_lVertexTris.push_back(vector3(1, 0, 0));
+	for (double i = ((2 * PI) / a_nSubdivisions); i < (2 * PI); i+=((2 * PI) / a_nSubdivisions))
+	{
+
+		m_lVertexTris.push_back(vector3(cos(i), sin(i), 0));
+	}
+	m_lVertexTris.push_back(vector3(1, 0, 0));
+
+	// Prints out all the vertices, not necessary but cool to see
+	for (size_t i = 0; i <= a_nSubdivisions; i++)
+	{
+		std::cout << "Vertex # " << i+1 << ":\tX - " << m_lVertexTris[i].x << "\t\tY - " << m_lVertexTris[i].y << std::endl;
+	}
+	
+	// Adds the tris
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0, 0, 0), m_lVertexTris[i], m_lVertexTris[i+1]);
+	}
+	m_lVertexTris.clear();
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -175,7 +198,7 @@ void MyMesh::AddTri(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTo
 {
 	//C
 	//| \
-		//A--B
+	//A--B
 //This will make the triangle A->B->C 
 	AddVertexPosition(a_vBottomLeft);
 	AddVertexPosition(a_vBottomRight);
