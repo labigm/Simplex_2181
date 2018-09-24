@@ -16,29 +16,6 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
-	// Calculate all points necessary for drawing the shape, including the origin at 0,0,0.
-	vector3* circPositions = new vector3[a_nSubdivisions + 1]; // Create an array of v3s to hold our positions.
-	circPositions[0] = vector3(0, 0, 0); // Origin
-	float theta = 0; // The angle which we're using to calculate positions of points. In radians.
-	// Calculate the position of every other point that's not the origin.
-	for (int i = 0; i < a_nSubdivisions; i++) { 
-		circPositions[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), 0); 
-		theta += (2 * PI / a_nSubdivisions);
-	}
-
-	// Call the AddTri function using the correct positions to generate the circle.
-	int j = 2; // Make this 2, since i starts at 1, and we may guarantee that the first triangle is 0->1->2 (where the numbers are the indices of circPositions)
-	for (int i = 1; i <= a_nSubdivisions; i++) {
-		if (j > a_nSubdivisions) {
-			j = 0;
-		}
-		AddTri(circPositions[0], circPositions[i], circPositions[j]); // Always draw starting from origin.
-		j++;
-	}
-	AddTri(circPositions[0], circPositions[a_nSubdivisions], circPositions[1]); // Draw in the final triangle, completing the shape.
-
-	// We won't use the array of positions anymore now that we've created the triangles.
-	delete[] circPositions;
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
