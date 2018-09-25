@@ -2,12 +2,15 @@
 void Application::InitVariables(void)
 {
 	//Make MyMesh object
-	m_pMesh = new MyMesh();
-	m_pMesh->GenerateCube(2.0f, C_BROWN);
+	//m_pMesh = new MyMesh();
+	//m_pMesh->GenerateCube(2.0f, C_BROWN);
 
 	//Make MyMesh object
 	m_pMesh1 = new MyMesh();
 	m_pMesh1->GenerateCube(1.0f, C_WHITE);
+
+	m_pMesh = new MyMesh();
+	m_pMesh->MakeQuad(2.0f);
 }
 void Application::Update(void)
 {

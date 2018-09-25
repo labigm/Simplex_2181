@@ -21,6 +21,7 @@ class MyMesh
 	ShaderManager* m_pShaderMngr = nullptr;	//Shader Manager
 
 public:
+	void MakeQuad(float size = 1.0f);
 	/*
 	USAGE: Initialize the object's fields
 	ARGUMENTS: ---
