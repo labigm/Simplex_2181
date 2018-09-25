@@ -105,7 +105,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E10 - ARBB", "E10 - ARBB\E1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E11 - EntityManager", "E11 - EntityManager\E11 - EntityManager.vcxproj", "{870B329D-6DED-48D2-8E86-0893E3BB8DAB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E04 - Mitch Steffens", "E04 - Mitch Steffens\E04 - Mitch Steffens.vcxproj", "{BF8FD076-F15E-46AC-9F7D-34D786967E18}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stefM_E04", "stefM_E04\E04 - Mitch Steffens.vcxproj", "{BF8FD076-F15E-46AC-9F7D-34D786967E18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
