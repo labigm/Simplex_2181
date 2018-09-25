@@ -17,17 +17,10 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
 
-	double angle = 360 / a_nSubdivisions; // angle of each slice (degrees)
+	double angle = 360.0 / a_nSubdivisions; // angle of each slice (degrees)
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		double bottom_angle = i * angle * PI/180; // angle to be used by "bottom" vertex (radians)
-		double top_angle;
-		if (i + 1 == a_nSubdivisions) {
-			top_angle = 2 * PI;
-		}
-		else {
-			top_angle = (i + 1) * angle * PI / 180; // angle to be used by "top" vertex (radians)
-		}
-		
+		double bottom_angle = i * angle * PI / 180.0; // angle to be used by "bottom" vertex (radians)
+		double top_angle = (i + 1) * angle * PI / 180.0; // angle to be used by "top" vertex (radians)
 
 		vector3 bottomLeft = vector3(0, 0, 0); // center of circle mesh
 		vector3 currentBottomRight = vector3(a_fRadius * cos(bottom_angle), a_fRadius * sin(bottom_angle), 0);
