@@ -5,21 +5,7 @@ Date: 2017/05
 #ifndef __MYMESH_H_
 #define __MYMESH_H_
 
-#define USEBASICX
-#ifdef USEBASICX
-#include "BasicX\BasicX.h"
-using namespace BasicX;
-#else
-#include "Simplex\Simplex.h"
-using namespace Simplex;
-#endif // USEBASICX
-
-#include "SFML\Window.hpp"
-#include "SFML\Graphics.hpp"
-#include "SFML\OpenGL.hpp"
-
-#include "ControllerConfiguration.h"
-#include "imgui\ImGuiObject.h"
+#include "Definitions.h"
 
 class MyMesh
 {
@@ -143,7 +129,6 @@ public:
 	OUTPUT: ---
 	*/
 	void AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTopLeft, vector3 a_vTopRight);
-	
 #pragma region 3D Primitives
 	/*
 	USAGE: Generates a cube
