@@ -376,13 +376,38 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	Mesh* pMesh = new Mesh();
-	pMesh->GenerateCylinder(a_fRadius, a_fHeight, a_nSubdivisions, a_v3Color);
-	m_lVertexPos = pMesh->GetVertexList();
-	m_uVertexCount = m_lVertexPos.size();
-	SafeDelete(pMesh);
+	//Mesh* pMesh = new Mesh();
+	//pMesh->GenerateCylinder(a_fRadius, a_fHeight, a_nSubdivisions, a_v3Color);
+	//m_lVertexPos = pMesh->GetVertexList();
+	//m_uVertexCount = m_lVertexPos.size();
+	//SafeDelete(pMesh);
 	// -------------------------------
+	m_lVertexTris.clear();
 
+	// Creates all the vertices with the given subdivisions
+	m_lVertexTris.push_back(vector3(a_fRadius, a_fHeight, 0));
+	for (double i = ((2 * PI) / a_nSubdivisions); i < (2 * PI); i += ((2 * PI) / a_nSubdivisions))
+	{
+
+		m_lVertexTris.push_back(vector3(cos(i) * a_fRadius, a_fHeight, sin(i) * a_fRadius));
+	}
+	m_lVertexTris.push_back(vector3(a_fRadius, a_fHeight, 0));
+
+	// Prints out all the vertices, not necessary but cool to see
+	for (size_t i = 0; i <= a_nSubdivisions; i++)
+	{
+		std::cout << "Vertex # " << i + 1 << ":\tX - " << m_lVertexTris[i].x << "\t\tY - " << m_lVertexTris[i].y << std::endl;
+	}
+
+	// Adds the tris
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0, a_fHeight, 0), m_lVertexTris[i + 1] , m_lVertexTris[i]);
+		AddTri(vector3(0, 0, 0), vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z), vector3(m_lVertexTris[i+1].x, 0, m_lVertexTris[i+1].z));
+		AddTri(m_lVertexTris[i + 1], vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z), m_lVertexTris[i] );
+		AddTri(vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z), m_lVertexTris[i + 1], vector3(m_lVertexTris[i+1].x, 0, m_lVertexTris[i+1].z));
+	}
+	m_lVertexTris.clear();
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -410,13 +435,81 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	Mesh* pMesh = new Mesh();
-	pMesh->GenerateTube(a_fOuterRadius, a_fInnerRadius, a_fHeight, a_nSubdivisions, a_v3Color);
-	m_lVertexPos = pMesh->GetVertexList();
-	m_uVertexCount = m_lVertexPos.size();
-	SafeDelete(pMesh);
+	//Mesh* pMesh = new Mesh();
+	//pMesh->GenerateTube(a_fOuterRadius, a_fInnerRadius, a_fHeight, a_nSubdivisions, a_v3Color);
+	//m_lVertexPos = pMesh->GetVertexList();
+	//m_uVertexCount = m_lVertexPos.size();
+	//SafeDelete(pMesh);
 	// -------------------------------
+	m_lVertexTris.clear();
 
+	// Creates all the vertices with the given subdivisions
+	m_lVertexTris.push_back(vector3(a_fOuterRadius, a_fHeight, 0));
+	for (double i = ((2 * PI) / a_nSubdivisions); i < (2 * PI); i += ((2 * PI) / a_nSubdivisions))
+	{
+
+		m_lVertexTris.push_back(vector3(cos(i) * a_fOuterRadius, a_fHeight, sin(i) * a_fOuterRadius));
+	}
+	m_lVertexTris.push_back(vector3(a_fOuterRadius, a_fHeight, 0));
+
+	// Prints out all the vertices, not necessary but cool to see
+	for (size_t i = 0; i <= a_nSubdivisions; i++)
+	{
+		std::cout << "Vertex # " << i + 1 << ":\tX - " << m_lVertexTris[i].x << "\t\tY - " << m_lVertexTris[i].y << std::endl;
+	}
+
+	// Adds the tris
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		// Top Section
+		AddTri(
+			vector3((m_lVertexTris[i].x/a_fOuterRadius) * a_fInnerRadius, a_fHeight, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius), 
+			m_lVertexTris[i + 1], 
+			m_lVertexTris[i]
+		);
+		AddTri(
+			vector3((m_lVertexTris[i].x/a_fOuterRadius) * a_fInnerRadius, a_fHeight, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius), 
+			vector3((m_lVertexTris[i+1].x / a_fOuterRadius) * a_fInnerRadius, a_fHeight, (m_lVertexTris[i+1].z / a_fOuterRadius) * a_fInnerRadius), 
+			m_lVertexTris[i+1]
+		);
+		
+		// Bottom Section
+		AddTri(
+			vector3((m_lVertexTris[i].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i].z/a_fOuterRadius) * a_fInnerRadius), 
+			vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z), 
+			vector3(m_lVertexTris[i + 1].x, 0, m_lVertexTris[i + 1].z)
+		);
+		AddTri(
+			vector3((m_lVertexTris[i].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius), 
+			vector3(m_lVertexTris[i + 1].x, 0, m_lVertexTris[i + 1].z), 
+			vector3((m_lVertexTris[i + 1].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i + 1].z / a_fOuterRadius) * a_fInnerRadius) 
+		);
+		
+		// Outer Sides
+		AddTri(
+			m_lVertexTris[i + 1], 
+			vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z), 
+			m_lVertexTris[i]
+		);
+		AddTri(
+			vector3(m_lVertexTris[i].x, 0, m_lVertexTris[i].z),
+			m_lVertexTris[i + 1], 
+			vector3(m_lVertexTris[i + 1].x, 0, m_lVertexTris[i + 1].z)
+		);
+
+		// Inner Sides
+		AddTri(
+			vector3((m_lVertexTris[i].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius),
+			vector3((m_lVertexTris[i + 1].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i + 1].z / a_fOuterRadius) * a_fInnerRadius),
+			vector3((m_lVertexTris[i].x / a_fOuterRadius) * a_fInnerRadius, a_fHeight, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius)
+		);
+		AddTri(
+			vector3((m_lVertexTris[i].x / a_fOuterRadius) * a_fInnerRadius,a_fHeight, (m_lVertexTris[i].z / a_fOuterRadius) * a_fInnerRadius),
+			vector3((m_lVertexTris[i+1].x / a_fOuterRadius) * a_fInnerRadius, 0, (m_lVertexTris[i+1].z / a_fOuterRadius) * a_fInnerRadius),
+			vector3((m_lVertexTris[i + 1].x / a_fOuterRadius) * a_fInnerRadius, a_fHeight, (m_lVertexTris[i + 1].z / a_fOuterRadius) * a_fInnerRadius)
+		);
+	}
+	m_lVertexTris.clear();
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -475,13 +568,133 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	Mesh* pMesh = new Mesh();
-	pMesh->GenerateSphere(a_fRadius, a_nSubdivisions, a_v3Color);
-	m_lVertexPos = pMesh->GetVertexList();
-	m_uVertexCount = m_lVertexPos.size();
-	SafeDelete(pMesh);
+	//Mesh* pMesh = new Mesh();
+	//pMesh->GenerateSphere(a_fRadius, a_nSubdivisions, a_v3Color);
+	//m_lVertexPos = pMesh->GetVertexList();
+	//m_uVertexCount = m_lVertexPos.size();
+	//SafeDelete(pMesh);
 	// -------------------------------
+	m_lVertexTris.clear();
 
+	// Creates all the vertices with the given subdivisions
+
+	//Front points
+	m_lVertexTris.push_back(vector3(-.5, .5, .5)); // 0
+	m_lVertexTris.push_back(vector3(.5, .5, .5)); // 1
+	m_lVertexTris.push_back(vector3(-.5, -.5, .5)); // 2
+	m_lVertexTris.push_back(vector3(.5, -.5, .5)); // 3
+
+	// Back points
+	m_lVertexTris.push_back(vector3(-.5, .5, -.5)); // 4
+	m_lVertexTris.push_back(vector3(.5, .5, -.5)); // 5
+	m_lVertexTris.push_back(vector3(-.5, -.5, -.5)); // 6
+	m_lVertexTris.push_back(vector3(.5, -.5, -.5)); // 7
+
+	// New Side Points
+	m_lVertexTris.push_back(vector3(0, 0, .5)); // 8
+	m_lVertexTris.push_back(vector3(0, 0, -.5)); // 9
+
+	m_lVertexTris.push_back(vector3(.5, 0, 0)); // 10
+	m_lVertexTris.push_back(vector3(-.5, 0, 0)); // 11
+
+	m_lVertexTris.push_back(vector3(0, .5, 0)); // 12
+	m_lVertexTris.push_back(vector3(0, -.5, 0)); // 13
+
+	// New Line Points
+	// X-Z based
+	m_lVertexTris.push_back(vector3(.5, 0, .5)); // 14
+	m_lVertexTris.push_back(vector3(.5, 0, -.5)); // 15
+	m_lVertexTris.push_back(vector3(-.5, 0, .5)); // 16
+	m_lVertexTris.push_back(vector3(-.5, 0, -.5)); // 17
+
+	// X-Y based
+	m_lVertexTris.push_back(vector3(.5, .5, 0)); // 18
+	m_lVertexTris.push_back(vector3(.5, -.5, 0)); // 19
+	m_lVertexTris.push_back(vector3(-.5, .5, 0)); // 20
+	m_lVertexTris.push_back(vector3(-.5, -.5, 0)); // 21
+
+	// Y-Z based
+	m_lVertexTris.push_back(vector3(0, .5, .5)); // 22
+	m_lVertexTris.push_back(vector3(0, .5, -.5)); // 23
+	m_lVertexTris.push_back(vector3(0, -.5, .5)); // 24
+	m_lVertexTris.push_back(vector3(0, -.5, -.5)); // 25
+
+	int size = m_lVertexTris.size();
+
+	for (size_t i = 0; i < size; i++)
+	{
+		m_lVertexTris[i] = (m_lVertexTris[i] / sqrt(m_lVertexTris[i].x * m_lVertexTris[i].x + m_lVertexTris[i].y * m_lVertexTris[i].y + m_lVertexTris[i].z * m_lVertexTris[i].z)) * a_fRadius;
+	}
+
+	// Front
+	AddTri(m_lVertexTris[0], m_lVertexTris[8], m_lVertexTris[22]);
+	AddTri(m_lVertexTris[22], m_lVertexTris[8], m_lVertexTris[1]);
+	AddTri(m_lVertexTris[1], m_lVertexTris[8], m_lVertexTris[14]);
+	AddTri(m_lVertexTris[14], m_lVertexTris[8], m_lVertexTris[3]);
+
+	AddTri(m_lVertexTris[3], m_lVertexTris[8], m_lVertexTris[24]);
+	AddTri(m_lVertexTris[24], m_lVertexTris[8], m_lVertexTris[2]);
+	AddTri(m_lVertexTris[2], m_lVertexTris[8], m_lVertexTris[16]);
+	AddTri(m_lVertexTris[16], m_lVertexTris[8], m_lVertexTris[0]);
+
+
+	// Right Side
+	AddTri(m_lVertexTris[1], m_lVertexTris[10], m_lVertexTris[18]);
+	AddTri(m_lVertexTris[18], m_lVertexTris[10], m_lVertexTris[5]);
+	AddTri(m_lVertexTris[5], m_lVertexTris[10], m_lVertexTris[15]);
+	AddTri(m_lVertexTris[15], m_lVertexTris[10], m_lVertexTris[7]);
+
+	AddTri(m_lVertexTris[7], m_lVertexTris[10], m_lVertexTris[19]);
+	AddTri(m_lVertexTris[19], m_lVertexTris[10], m_lVertexTris[3]);
+	AddTri(m_lVertexTris[3], m_lVertexTris[10], m_lVertexTris[14]);
+	AddTri(m_lVertexTris[14], m_lVertexTris[10], m_lVertexTris[1]);
+
+	// Left Side
+	AddTri(m_lVertexTris[0], m_lVertexTris[11], m_lVertexTris[16]);
+	AddTri(m_lVertexTris[16], m_lVertexTris[11], m_lVertexTris[2]);
+	AddTri(m_lVertexTris[2], m_lVertexTris[11], m_lVertexTris[21]);
+	AddTri(m_lVertexTris[21], m_lVertexTris[11], m_lVertexTris[6]);
+
+	AddTri(m_lVertexTris[6], m_lVertexTris[11], m_lVertexTris[17]);
+	AddTri(m_lVertexTris[17], m_lVertexTris[11], m_lVertexTris[4]);
+	AddTri(m_lVertexTris[4], m_lVertexTris[11], m_lVertexTris[20]);
+	AddTri(m_lVertexTris[20], m_lVertexTris[11], m_lVertexTris[0]);
+
+	// Top
+	AddTri(m_lVertexTris[0], m_lVertexTris[12], m_lVertexTris[20]);
+	AddTri(m_lVertexTris[20], m_lVertexTris[12], m_lVertexTris[4]);
+	AddTri(m_lVertexTris[4], m_lVertexTris[12], m_lVertexTris[23]);
+	AddTri(m_lVertexTris[23], m_lVertexTris[12], m_lVertexTris[5]);
+
+	AddTri(m_lVertexTris[5], m_lVertexTris[12], m_lVertexTris[18]);
+	AddTri(m_lVertexTris[18], m_lVertexTris[12], m_lVertexTris[1]);
+	AddTri(m_lVertexTris[1], m_lVertexTris[12], m_lVertexTris[22]);
+	AddTri(m_lVertexTris[22], m_lVertexTris[12], m_lVertexTris[0]);
+
+	// Bottom
+	AddTri(m_lVertexTris[2], m_lVertexTris[13], m_lVertexTris[24]);
+	AddTri(m_lVertexTris[24], m_lVertexTris[13], m_lVertexTris[3]);
+	AddTri(m_lVertexTris[3], m_lVertexTris[13], m_lVertexTris[19]);
+	AddTri(m_lVertexTris[19], m_lVertexTris[13], m_lVertexTris[7]);
+
+	AddTri(m_lVertexTris[7], m_lVertexTris[13], m_lVertexTris[25]);
+	AddTri(m_lVertexTris[25], m_lVertexTris[13], m_lVertexTris[6]);
+	AddTri(m_lVertexTris[6], m_lVertexTris[13], m_lVertexTris[21]);
+	AddTri(m_lVertexTris[21], m_lVertexTris[13], m_lVertexTris[2]);
+
+	// Back
+	AddTri(m_lVertexTris[4], m_lVertexTris[9], m_lVertexTris[17]);
+	AddTri(m_lVertexTris[17], m_lVertexTris[9], m_lVertexTris[6]);
+	AddTri(m_lVertexTris[6], m_lVertexTris[9], m_lVertexTris[25]);
+	AddTri(m_lVertexTris[25], m_lVertexTris[9], m_lVertexTris[7]);
+
+	AddTri(m_lVertexTris[7], m_lVertexTris[9], m_lVertexTris[15]);
+	AddTri(m_lVertexTris[15], m_lVertexTris[9], m_lVertexTris[5]);
+	AddTri(m_lVertexTris[5], m_lVertexTris[9], m_lVertexTris[23]);
+	AddTri(m_lVertexTris[23], m_lVertexTris[9], m_lVertexTris[4]);
+
+	
+	m_lVertexTris.clear();
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
