@@ -103,6 +103,7 @@ void Application::Release(void)
 		}
 	}
 	delete[] meshes; // Delete the dynamically-allocated array of MyMesh*, as well.
+	meshes = nullptr;
 	//release GUI
 	ShutdownGUI();
 }

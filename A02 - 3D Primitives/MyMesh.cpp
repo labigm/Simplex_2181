@@ -280,16 +280,18 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 
 	vector3* vertexPos = new vector3[a_nSubdivisions + 2]; // Create an array of v3s to hold our positions.
 	// Draw the circle which makes the base of the cone.
-	vertexPos[0] = vector3(0, 0, 0); // Create the origin.
+
+	vertexPos[0] = vector3(0.0f, 0.0f, -a_fHeight / 2.0f); // Create the origin.
+
 	float theta = 0; // The angle which we use to calculate positions of points, in radians.
 					 // Calculate positions of all other points.
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		vertexPos[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), 0);
+		vertexPos[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), -a_fHeight / 2.0f);
 		theta += (2 * PI / a_nSubdivisions);
 	}
 	// Add the only other point, which represents the tip of the cone.
 	
-	vertexPos[a_nSubdivisions + 1] = vector3(0, 0, a_fHeight);
+	vertexPos[a_nSubdivisions + 1] = vector3(0.0f, 0.0f, a_fHeight / 2.0f);
 	
 	// Now, draw all triangles via AddTri to generate the circle first, then the cone.
 	int j = 2; // Make this 2, since i starts at 1, and we may guarantee that the first triangle is 0->2->1 (where the numbers are the indices of vertexPos)
@@ -317,6 +319,7 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	}
 	
 	delete[] vertexPos;
+	vertexPos = nullptr;
 	
 
 	// Adding information about color
@@ -342,13 +345,13 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	vector3* vertexPos = new vector3[(a_nSubdivisions * 2) + 1]; // Create an array of v3s to hold our positions.
 	// Draw the first circle facing "down" (CW) with a z-component of zero.
 	// Draw the second circle facing "up" (CCW) with a z-component of the height.
-	vertexPos[0] = vector3(0, 0, 0); // Create the origin of the first circle.
-	vertexPos[a_nSubdivisions + 1] = vector3(0, 0, a_fHeight); // Create the origin of the second circle.
+	vertexPos[0] = vector3(0, 0, -a_fHeight / 2.0f); // Create the origin of the first circle.
+	vertexPos[a_nSubdivisions + 1] = vector3(0, 0, a_fHeight / 2.0f); // Create the origin of the second circle.
 	float theta = 0; // The angle which we use to calculate positions of points, in radians.
 	 // Calculate positions of the circle points.
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		vertexPos[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), 0);
-		vertexPos[a_nSubdivisions + (i + 2)] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), a_fHeight);
+		vertexPos[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), -a_fHeight / 2.0f);
+		vertexPos[a_nSubdivisions + (i + 2)] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), a_fHeight / 2.0f);
 		theta += (2 * PI / a_nSubdivisions);
 	}
 	
@@ -402,6 +405,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	}
 
 	delete[] vertexPos;
+	vertexPos = nullptr;
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -435,10 +439,10 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	// Calculate positions of the points.
 	int n = 0; // Used for indexing purposes.
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		vertexPos[n] = vector3(a_fOuterRadius * cos(theta), a_fOuterRadius * sin(theta), 0); // First, calculate the outer point.
-		vertexPos[n + 1] = vector3(a_fInnerRadius * cos(theta), a_fInnerRadius * sin(theta), 0);
-		vertexPos[(a_nSubdivisions * 2) + n] = vector3(a_fInnerRadius * cos(theta), a_fInnerRadius * sin(theta), a_fHeight); // Inner point of the top shape.
-		vertexPos[(a_nSubdivisions * 2) + n + 1] = vector3(a_fOuterRadius * cos(theta), a_fOuterRadius * sin(theta), a_fHeight);
+		vertexPos[n] = vector3(a_fOuterRadius * cos(theta), a_fOuterRadius * sin(theta), -a_fHeight / 2.0f); // First, calculate the outer point.
+		vertexPos[n + 1] = vector3(a_fInnerRadius * cos(theta), a_fInnerRadius * sin(theta), -a_fHeight / 2.0f);
+		vertexPos[(a_nSubdivisions * 2) + n] = vector3(a_fInnerRadius * cos(theta), a_fInnerRadius * sin(theta), a_fHeight / 2.0f); // Inner point of the top shape.
+		vertexPos[(a_nSubdivisions * 2) + n + 1] = vector3(a_fOuterRadius * cos(theta), a_fOuterRadius * sin(theta), a_fHeight / 2.0f);
 		theta += (2 * PI / a_nSubdivisions);
 		n += 2;
 	}
@@ -526,6 +530,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	}
 	
 	delete[] vertexPos;
+	vertexPos = nullptr;
 	
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -555,8 +560,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	GenerateCube(a_fInnerRadius * 2.0f, a_v3Color);
 	// -------------------------------
 
 	// Adding information about color
@@ -580,8 +584,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	// GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	vector3* vertexPos = new vector3[(a_nSubdivisions * ((2 * a_nSubdivisions) - 1)) + 2]; // Create an array of v3s to hold our positions.
 	vertexPos[0] = vector3(0, 0, -a_fRadius); // Define a point at the "bottom"
 	float tempRad = (a_fRadius / a_nSubdivisions); // Define a temporary radius to use as we draw the concentric circles.
@@ -606,46 +608,50 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		// Calculate positions of each circle's points.
 		tempRad -= ((a_fRadius) / a_nSubdivisions);
 		for (int j = 0; j < a_nSubdivisions; j++) {
-			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (-a_fRadius + tempRad));
+			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (a_fRadius - tempRad));
 			n++;
 			theta += (2 * PI / a_nSubdivisions);
 		}
 	}
+	// Add the final point, which is the "top" vertex of the sphere.
+	vertexPos[n] = vector3(0, 0, a_fRadius);
 	
 	// Connect all of these points via quads.
 	// Draw triangles to connect the bottommost circle to the bottommost point.
 	int i = 2;
 	int j = 1;
 	for (int n = 0; n < a_nSubdivisions; n++) {
-		if (i >= a_nSubdivisions) {
+		if (i > a_nSubdivisions) {
 			i = 1;
 		}
-		if (j >= a_nSubdivisions) {
+		if (j > a_nSubdivisions) {
 			j = 1;
 		}
 		AddTri(vertexPos[0], vertexPos[i], vertexPos[j]);
 		i++;
 		j++;
 	}
-	int k = a_nSubdivisions + 1;
-	int m = a_nSubdivisions + 2;
+
+	int k = 0;
+	int m = 0;
 	// Draw quads to connect points on the circles to each other.
-	for (int p = 0; p < a_nSubdivisions; p++) {
+	for (int p = 0; p < (a_nSubdivisions * 2) - 2; p++) {
 		i = 1 + (p * a_nSubdivisions);
 		j = 2 + (p * a_nSubdivisions);
-		
+		k = 1 + ((p + 1) * a_nSubdivisions);
+		m = 2 + ((p + 1) * a_nSubdivisions);
 		for (int n = 0; n < a_nSubdivisions; n++) {
-			if (i > a_nSubdivisions) {
-				i = 1;
+			if (i > 1 + (a_nSubdivisions * (p + 1))) {
+				i = 1 + (p * a_nSubdivisions);
 			}
-			if (j > a_nSubdivisions) {
-				j = 1;
+			if (j > 1 + (a_nSubdivisions * (p + 1))) {
+				j = 2 + (p * a_nSubdivisions);
 			}
-			if (k > a_nSubdivisions * 2) {
-				k = a_nSubdivisions + 1;
+			if (k > 1 + (a_nSubdivisions * (2 + p))) {
+				k = 1 + ((p + 1) * a_nSubdivisions);
 			}
-			if (m > a_nSubdivisions * 2) {
-				m = a_nSubdivisions + 1;
+			if (m > 1 + (a_nSubdivisions * (2 + p))) {
+				m = 2 + ((p + 1) * a_nSubdivisions);
 			}
 			AddQuad(vertexPos[i], vertexPos[j], vertexPos[k], vertexPos[m]);
 			i++;
@@ -654,10 +660,24 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			m++;
 		}
 	}
-	
-	
+	// Finally, close up the shape with the point at the "top". Use triangles for this.
+	int lastIndex = (a_nSubdivisions * ((2 * a_nSubdivisions) - 1)) + 1; // The last index of the vertexPos array.
+	int a = lastIndex - a_nSubdivisions;
+	int b = (lastIndex - a_nSubdivisions) + 1;
+	for (int q = 0; q < a_nSubdivisions; q++) {
+		if (a >= lastIndex) {
+			a = lastIndex - a_nSubdivisions;
+		}
+		if (b >= lastIndex) {
+			b = lastIndex - a_nSubdivisions;
+		}
+		AddTri(vertexPos[lastIndex], vertexPos[a], vertexPos[b]);
+		a++;
+		b++;
+	}
 
 	delete[] vertexPos;
+	vertexPos = nullptr;
 	// -------------------------------
 
 	// Adding information about color
