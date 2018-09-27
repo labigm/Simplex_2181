@@ -4,6 +4,9 @@ AppClass::AppClass(std::string a_windowName) : m_sWindowName(a_windowName) {}
 AppClass::AppClass(AppClass const& input) {}
 AppClass& AppClass::operator=(AppClass const& input) { return *this; }
 AppClass::~AppClass(void){ Release(); }
+std::vector<glm::vec3> lVertex;
+bool switchColor = false;
+bool initialRun = false;
 void AppClass::Run(void)
 {
 	//Initialize the system with the fields recollected by the constructor
@@ -11,7 +14,7 @@ void AppClass::Run(void)
 	
 	//Set the background color
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-
+	
 	// run the main loop
 	while (m_bRunning)
 	{
@@ -72,16 +75,31 @@ void AppClass::InitShaders(void)
 }
 void AppClass::InitVariables(void)
 {
-	std::vector<glm::vec3> lVertex;
-	//vertex 1
-	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
-	lVertex.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //color
-	//vertex 2
-	lVertex.push_back(glm::vec3(1.0f, -1.0f, 0.0f)); //position
-	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //color
-	//vertex 3
-	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
-	lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
+	if (!initialRun) {
+		//vertex 1
+		lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
+		lVertex.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //color
+		//vertex 2
+		lVertex.push_back(glm::vec3(1.0f, -1.0f, 0.0f)); //position
+		lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //color
+		//vertex 3
+		lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
+		lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
+
+		initialRun = true;
+	}
+	else if (!switchColor) {
+
+		lVertex[1] = glm::vec3(1.0f, 0.0f, 0.0f);
+		lVertex[3] = glm::vec3(0.0f, 1.0f, 0.0f);
+		lVertex[5] = glm::vec3(0.0f, 0.0f, 1.0f);
+	}
+	else {
+		lVertex[1] = glm::vec3(0.0f, 1.0f, 1.0f);
+		lVertex[3] = glm::vec3(1.0f, 0.0f, 1.0f);
+		lVertex[5] = glm::vec3(1.0f, 1.0f, 0.0f);
+	}
+	
 	
 	glGenVertexArrays(1, &m_uVAO);//Generate vertex array object
 	glGenBuffers(1, &m_uVBO);//Generate Vertex Buffered Object
@@ -107,8 +125,10 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 {
 	if (a_event.key.code == sf::Keyboard::Key::Escape)//Event says I pressed the Escape key
 		m_bRunning = false;
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) //I am currently pressing the Num1 (not the same as above)
-		m_v3Color = glm::vec3(1.0f, 0.0f, 0.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) { // Press 1 to switch between the colors for E03
+		switchColor = !switchColor;
+		InitVariables();
+	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))

@@ -1,4 +1,21 @@
 #include "MyMesh.h"
+void MyMesh::MakeQuad(float size) {
+	AddTri(vector3(-size, size, 0), vector3(size,-size,0), vector3(-size,size,0));
+
+	AddVertexPosition(vector3(-size,size,size));
+	AddVertexPosition(vector3(size, -size, size));
+	AddVertexPosition(vector3(size, size, size));
+
+	AddVertexPosition(vector3(size, -size, size));
+	AddVertexPosition(vector3(size, -size, -size));
+	AddVertexPosition(vector3(size, size, size));
+
+	AddVertexPosition(vector3(size, size, size));
+	AddVertexPosition(vector3(size, -size, -size));
+	AddVertexPosition(vector3(size, size, -size));
+	
+	CompileOpenGL3X();
+}
 void MyMesh::Init(void)
 {
 	m_bBinded = false;

@@ -14,7 +14,71 @@ Date: 2017/05
 
 class Application
 {
+	// Tip of tips
 	MyMesh* m_pMesh = nullptr;
+	MyMesh* m_pMesh1 = nullptr;
+
+	// Base of tips
+	MyMesh* m_pMesh2 = nullptr;
+	MyMesh* m_pMesh3 = nullptr;
+
+	//First head row
+	MyMesh* m_pMesh4 = nullptr;
+	MyMesh* m_pMesh5 = nullptr;
+	MyMesh* m_pMesh6 = nullptr;
+	MyMesh* m_pMesh7 = nullptr;
+	MyMesh* m_pMesh8 = nullptr;
+	MyMesh* m_pMesh9 = nullptr;
+	MyMesh* m_pMesh10 = nullptr;
+
+	//Second Head row + eye slots
+	MyMesh* m_pMesh11 = nullptr;
+	MyMesh* m_pMesh12 = nullptr;
+	MyMesh* m_pMesh13 = nullptr;
+	MyMesh* m_pMesh14 = nullptr;
+	MyMesh* m_pMesh15 = nullptr;
+	MyMesh* m_pMesh16 = nullptr;
+	MyMesh* m_pMesh17 = nullptr;
+
+	//Third head row
+	MyMesh* m_pMesh18 = nullptr;
+	MyMesh* m_pMesh19 = nullptr;
+	MyMesh* m_pMesh20 = nullptr;
+	MyMesh* m_pMesh21 = nullptr;
+	MyMesh* m_pMesh22 = nullptr;
+	MyMesh* m_pMesh23 = nullptr;
+	MyMesh* m_pMesh24 = nullptr;
+	MyMesh* m_pMesh25 = nullptr;
+	MyMesh* m_pMesh26 = nullptr;
+	MyMesh* m_pMesh27 = nullptr;
+	MyMesh* m_pMesh28 = nullptr;
+
+	// Fourth head row
+	MyMesh* m_pMesh29 = nullptr;
+	MyMesh* m_pMesh30 = nullptr;
+	MyMesh* m_pMesh31 = nullptr;
+	MyMesh* m_pMesh32 = nullptr;
+	MyMesh* m_pMesh33 = nullptr;
+	MyMesh* m_pMesh34 = nullptr;
+	MyMesh* m_pMesh35 = nullptr;
+	MyMesh* m_pMesh36 = nullptr;
+	MyMesh* m_pMesh37 = nullptr;
+
+	// Fifth head row
+	MyMesh* m_pMesh38 = nullptr;
+	MyMesh* m_pMesh39 = nullptr;
+	MyMesh* m_pMesh40 = nullptr;
+	MyMesh* m_pMesh41 = nullptr;
+
+	// Sixth head row
+	MyMesh* m_pMesh42 = nullptr;
+	MyMesh* m_pMesh43 = nullptr;
+	MyMesh* m_pMesh44 = nullptr;
+	MyMesh* m_pMesh45 = nullptr;
+
+	float value = 0.0f;
+	bool goingRight = true;
+
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 private:
