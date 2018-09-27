@@ -284,7 +284,7 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	vertexPos[0] = vector3(0.0f, 0.0f, -a_fHeight / 2.0f); // Create the origin.
 
 	float theta = 0; // The angle which we use to calculate positions of points, in radians.
-					 // Calculate positions of all other points.
+					 // Calculate positions of all points in the circle.
 	for (int i = 0; i < a_nSubdivisions; i++) {
 		vertexPos[i + 1] = vector3(a_fRadius * cos(theta), a_fRadius * sin(theta), -a_fHeight / 2.0f);
 		theta += (2 * PI / a_nSubdivisions);
@@ -342,7 +342,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	vector3* vertexPos = new vector3[(a_nSubdivisions * 2) + 1]; // Create an array of v3s to hold our positions.
+	vector3* vertexPos = new vector3[(a_nSubdivisions * 2) + 2]; // Create an array of v3s to hold our positions.
 	// Draw the first circle facing "down" (CW) with a z-component of zero.
 	// Draw the second circle facing "up" (CCW) with a z-component of the height.
 	vertexPos[0] = vector3(0, 0, -a_fHeight / 2.0f); // Create the origin of the first circle.
@@ -406,6 +406,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 
 	delete[] vertexPos;
 	vertexPos = nullptr;
+	
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -433,7 +434,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 	
-	vector3* vertexPos = new vector3[(a_nSubdivisions * 4) + 1]; // Create an array of v3s to hold our positions.
+	vector3* vertexPos = new vector3[(a_nSubdivisions * 4) + 2]; // Create an array of v3s to hold our positions.
 	// We're going to first make two "flat donuts" as two faces of the tube.
 	float theta = 0; // The angle which we use to calculate positions of points, in radians.
 	// Calculate positions of the points.
@@ -448,7 +449,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	}
 	
 	// Draw the quads to make up the "flat donuts" of the tube. 
-	// First, draw the shape with a z-component of zero. We'll draw this facing outwards by going clockwise.
+	// First, draw the shape with a negative z-component. We'll draw this facing outwards by going clockwise.
 	int i = 0;
 	int j = 2;
 	for (int x = 0; x < a_nSubdivisions; x++) {
@@ -463,7 +464,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 		j += 2;
 	}
 
-	// Then, draw the one with a nonzero z-component. We'll need to tweak the vertex drawing order in order to draw them counter-clockwise.
+	// Then, draw the one with a positive z-component. We'll need to tweak the vertex drawing order in order to draw them counter-clockwise.
 	i = a_nSubdivisions * 2;
 	j = (a_nSubdivisions * 2) + 2;
 	for (int x = 0; x < a_nSubdivisions; x++) {
@@ -531,7 +532,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	
 	delete[] vertexPos;
 	vertexPos = nullptr;
-	
+
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -592,23 +593,34 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Draws up to the middle-most ring of circles, inclusive.
 	for (int i = 1; i <= a_nSubdivisions; i++) {
 		float theta = 0; // The angle which we use to calculate positions of points, in radians.
+		float angle2 = (PI * i) / (a_nSubdivisions * 2); // An angle from 0 to 90 degrees which we'll use to calculate the tempRad for these circles.
+		if (abs(angle2 - (PI / 2)) < 0.00005f) { // The angle is basically Pi / 2, and because taking the tangent of that will result in infinity, just make it equal to the standard radius.
+			tempRad = a_fRadius;
+		} else { // Use properties of SOH-CAH-TOA (we use the tangent portion) to figure out this particular circle's radius.
+			tempRad = (tan(angle2) * a_fRadius * (a_nSubdivisions - i)) / (a_nSubdivisions);
+		}
 		// Calculate positions of each circle's points.
 		for (int j = 0; j < a_nSubdivisions; j++) {
-			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (-a_fRadius + tempRad));
+			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (-a_fRadius * (a_nSubdivisions - i)) / a_nSubdivisions);
 			n++;
 			theta += (2 * PI / a_nSubdivisions);
 		}
-		tempRad += (a_fRadius / a_nSubdivisions);
 	}
 
 	
 	// Draws the ring of circles after the middle-most one.
 	for (int i = 1; i < a_nSubdivisions; i++) {
 		float theta = 0; // The angle which we use to calculate positions of points, in radians.
+		float angle2 = (PI * (a_nSubdivisions - i)) / (a_nSubdivisions * 2); // An angle from 0 to 90 degrees which we'll use to calculate the tempRad for these circles.
+		if (abs(angle2 - (PI / 2)) < 0.00005f) { // The angle is basically Pi / 2, and because taking the tangent of that will result in infinity, just make it equal to the standard radius.
+			tempRad = a_fRadius;
+		}
+		else { // Use properties of SOH-CAH-TOA (we use the tangent portion) to figure out this particular circle's radius.
+			tempRad = (tan(angle2) * a_fRadius * i) / (a_nSubdivisions);
+		}
 		// Calculate positions of each circle's points.
-		tempRad -= ((a_fRadius) / a_nSubdivisions);
 		for (int j = 0; j < a_nSubdivisions; j++) {
-			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (a_fRadius - tempRad));
+			vertexPos[n] = vector3(tempRad * cos(theta), tempRad * sin(theta), (a_fRadius * i) / a_nSubdivisions);
 			n++;
 			theta += (2 * PI / a_nSubdivisions);
 		}
@@ -678,7 +690,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	delete[] vertexPos;
 	vertexPos = nullptr;
-	// -------------------------------
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
