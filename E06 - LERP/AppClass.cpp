@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Jonathan So - jds7523@rit.edu";
 
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUpward(vector3(5.0f,3.0f,15.0f), ZERO_V3, AXIS_Y);
@@ -59,7 +59,24 @@ void Application::Display(void)
 
 
 	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	static vector3 startPt = m_stopsList[0];
+	static int n = 1; // Keep track of the index we're at in m_stopsList.
+	static vector3 endPt = m_stopsList[n];
+	
+	v3CurrentPos = glm::lerp(startPt, endPt, fTimer);
+	
+	if (fTimer >= 1.0f) {
+		std::swap(startPt, endPt); // Change the start point to the one we're current on (the previous end).
+		if (n >= m_stopsList.size()) { // If we've hit the last stop...
+			n = 0; // Go back to the first point.
+		}
+		else {
+			n++;
+		}
+		endPt = m_stopsList[n];
+		fTimer = 0.0f; // Make sure to reset the timer.
+	}
+
 	//-------------------
 	
 
