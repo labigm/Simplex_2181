@@ -20,7 +20,14 @@ class Application
 {
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
 	std::vector<uint> m_shapeList; //shape index for circles
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Jonathan So - jds7523@rit.edu";
+
+	std::vector<vector3> m_stopsList; // The list indicating all stops on all of the torus shapes for the sphere orbits.
+	std::vector<float> m_timerList; // Contains every timer for every sphere, used for LERPing.
+	std::vector<vector3> m_startPtList; // Each sphere's current start point.
+	std::vector<vector3> m_endPtList; // Each sphere's current end point.
+	std::vector<int> m_indexList; // Used to traverse the m_stopsList for each sphere.
+	std::vector<int> m_maxIndexList; // When a sphere's index (seen above) reaches this, reset to the sphere's initial start point.
 	
 private:
 	static ImGuiObject gui; //GUI object

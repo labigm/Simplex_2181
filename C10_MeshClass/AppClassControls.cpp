@@ -413,6 +413,32 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_pCameraMngr->MoveVertical(fSpeed);
+
+	// Rotation of the object
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+		m_v3Angles.x += 1.0f;
+		if (fMultiplier) {
+			m_v3Angles.x -= 2.0f;
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
+		m_v3Angles.y += 1.0f;
+		if (fMultiplier) {
+			m_v3Angles.y -= 2.0f;
+		}
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+		m_v3Angles.z += 1.0f;
+		if (fMultiplier) {
+			m_v3Angles.z -= 2.0f;
+		}
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
+		m_v3Angles = vector3(0.0f);
+	}
 #pragma endregion
 }
 //Joystick
