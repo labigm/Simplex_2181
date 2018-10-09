@@ -414,30 +414,42 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_pCameraMngr->MoveVertical(fSpeed);
 #pragma endregion
+	// For handling input on X, Y, and Z, when the user holds a key down, m_v3Rotation of that component is equal to 1.0f. Otherwise, it is 0.0f.
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
 	{
 		if (fMultiplier)
-			m_v3Rotation.x -= 1.0f;
+			m_v3Rotation.x = 2.0f;
 		else
-			m_v3Rotation.x += 1.0f;
+			m_v3Rotation.x = 1.0f;
+	}
+	else {
+		m_v3Rotation.x = 0.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 	{
 		if (fMultiplier)
-			m_v3Rotation.y -= 1.0f;
+			m_v3Rotation.y = 2.0f;
 		else
-			m_v3Rotation.y += 1.0f;
+			m_v3Rotation.y = 1.0f;
+	}
+	else {
+		m_v3Rotation.y = 0.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
 		if (fMultiplier)
-			m_v3Rotation.z -= 1.0f;
+			m_v3Rotation.z = 2.0f;
 		else
-			m_v3Rotation.z += 1.0f;
+			m_v3Rotation.z = 1.0f;
+	}
+	else {
+		m_v3Rotation.z = 0.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
-		m_v3Rotation = vector3(0.0f);
+		// To reset the rotation on the shape, set the m_qOrientation to a zeroed-out quaternion.
+		// m_v3Rotation = vector3(0.0f);
+		m_qOrientation = glm::angleAxis(glm::radians(0.0f), vector3(0.0f));
 	}
 }
 //Joystick
