@@ -10,6 +10,9 @@ void Application::InitVariables(void)
 
 	//Load a model
 	m_pModel->Load("Minecraft\\Steve.obj");
+
+	m_pMesh = new MyMesh();
+	m_pMesh->GenerateCube(2.0f, C_RED);
 }
 void Application::Update(void)
 {
@@ -28,12 +31,14 @@ void Application::Update(void)
 	float fDeltaTime = m_pSystem->GetDeltaTime(uClock);
 
 #pragma region SLERP
-	if (false)
+	if (true)
 	{
-		quaternion q1;
-		quaternion q2 = glm::angleAxis(glm::radians(359.9f), vector3(0.0f, 0.0f, 1.0f));
+		quaternion q1; // IDENTITY
+		quaternion q2 = glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f)); // Not actually doing rotation; is orienting. That's why glm::radians(360.0f) will nOT WORK.
+		// In fact, glm::radians(360.0f) will make it freak out due to float error.
+		// Try 359.90f.
 		float fPercentage = MapValue(fTimer, 0.0f, 5.0f, 0.0f, 1.0f);
-		quaternion qSLERP = glm::mix(q1, q2, fPercentage);
+		quaternion qSLERP = glm::mix(q1, q2, fPercentage); // Slerping is done via glm::mix
 		m_m4Steve = glm::toMat4(qSLERP);
 	}
 #pragma endregion
@@ -49,7 +54,7 @@ void Application::Update(void)
 	}
 #pragma endregion
 #pragma region orientation using quaternions
-	if (true)
+	if (false)
 	{
 		m_m4Steve = glm::toMat4(m_qOrientation);
 	}
@@ -60,14 +65,48 @@ void Application::Update(void)
 
 	//Send the model to render list
 	m_pModel->AddToRenderList();
+
 }
 void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
-	
+
+	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+	matrix4 m4Model = glm::translate(m_v3Orientation);
+	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
+
+	// Camera Types: Ortho and Perspective
+	// m4Projection = glm::ortho(0.0f, 7.5f, -5.0f, 5.0f, 0.01f, 20.0f);
+
+	float fovy = 90.0f; // Field of view
+	float aspect = static_cast<float> (m_pSystem->GetWindowWidth()) / static_cast<float> (m_pSystem->GetWindowHeight()); // Aspect Ratio
+	float zNear = 0.01f; // Near clipping plane
+	float zFar = 20.0f; // Far clipping plane
+	m4Projection = glm::perspective(fovy, aspect, zNear, zFar);
+
+	vector3 v3Position = vector3(0.0f, 0.0f, 7.0f);
+	vector3 v3Target;
+	vector3 v3Up = vector3(0.0f, 1.0f, 0.0f);
+	m4View = glm::lookAt(v3Position, v3Target, v3Up);
+
+	m_pMesh->Render(m4Projection, m4View, m4Model);
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
+
+	/*/
+	float fovy = 45.0f; // Field of view
+	float aspect = m_pSystem->GetWindowWidth() / m_pSystem->GetWindowHeight(); // Aspect Ratio
+	float zNear = 0.01f; // Near clipping plane
+	float zFar = 1000.0f; // Far clipping plane
+	m4Projection = glm::perspective(fovy, aspect, zNear, zFar);
+
+	// The two matrices will be modified somewhere else.
+	// Use the below lines for the HW.
+	m_pCameraMngr->SetProjectionMatrix(m4Projection);
+	m_pCameraMngr->SetViewMatrix(m4View);
+	*/
 
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
@@ -85,7 +124,7 @@ void Application::Release(void)
 {
 	//release model
 	SafeDelete(m_pModel);
-
+	SafeDelete(m_pMesh); // In release, safedelete.
 	//release GUI
 	ShutdownGUI();
 }
