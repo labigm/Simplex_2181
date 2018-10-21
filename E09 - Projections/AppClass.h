@@ -21,7 +21,7 @@ class Application
 	MyMesh* m_pMesh3 = nullptr; //Primitive to display
 	uint m_uProjection = 1; //The projection used for each mesh
 	MyCamera* m_pCamera = nullptr; //camera we will use in this application
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //Programmer ID
+	String m_sProgrammer = "Jonathan So - jds7523@rit.edu"; //Programmer ID
 private:
 	static ImGuiObject gui; //GUI object
 
