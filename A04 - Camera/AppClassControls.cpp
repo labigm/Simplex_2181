@@ -369,6 +369,29 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
+	
+	// I believe that I've found a way to express the rotation as a quaternion, problem is that 
+	// I don't know how to apply this quaternion rotation to a vector3 and relate it in a sensible way to the m_v3Target.
+
+/*
+	quaternion orientation = glm::toQuat(m_pCamera->GetViewMatrix()); // UNUSED SO FAR
+	orientation *= glm::angleAxis(fAngleY, AXIS_X);
+	orientation *= glm::angleAxis(fAngleX, AXIS_Y);
+	*/
+	
+	// m_pCamera->SetTarget(vector3(-fAngleY * 2 * PI, 0.0f, (fAngleX / 2) * PI)); // DOES NOT ACTUALLY WORK, WILL MOVE IN WORLD COORDS NOT CAMERA VIEW	
+	// m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x  + fAngleY, m_pCamera->GetTarget().y, m_pCamera->GetTarget().z + fAngleX)); // DOES NOT ACTUALLY WORK, WILL MOVE IN WORLD COORDS NOT CAMERA VIEW	
+
+	//m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x + fAngleY, m_pCamera->GetTarget().y + fAngleX, m_pCamera->GetTarget().z)); // I think that my solution has been Gimbal Locked.
+	// After rotating 90 degrees, it limits the user to only being able to rotate in one axis...
+
+	// m_pCamera->SetTarget(glm::eulerAngles(orientation)); // EulerAngles I remember has problems.
+
+	// This solution is patterned after E08.
+	quaternion orientation; 
+	orientation = orientation * glm::angleAxis(fAngleY, AXIS_X);
+	orientation = orientation * glm::angleAxis(fAngleX, AXIS_Y);
+
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -390,6 +413,20 @@ void Application::ProcessKeyboard(void)
 		m_pCamera->MoveForward(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	
+	// Made sideways movement a separate if statement to enable eight-way directional movement.
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCamera->MoveSideways(fSpeed); // Due to the way it works, going left requires that we pass in a positive fSpeed...
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCamera->MoveSideways(-fSpeed); // And vice-versa for the right.
+	
+	/*
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCamera->MoveVertical(fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCamera->MoveVertical(-fSpeed);
+	*/
+
 #pragma endregion
 }
 //Joystick
@@ -417,6 +454,9 @@ void Application::ProcessJoystick(void)
 #pragma endregion
 #pragma region Camera Orientation
 	//Change the Yaw and the Pitch of the camera
+// #TODO
+	
+
 #pragma endregion
 #pragma region ModelOrientation Orientation
 	m_qArcBall = quaternion(vector3(glm::radians(m_pController[m_uActCont]->axis[SimplexAxis_POVY] / 20.0f), 0.0f, 0.0f)) * m_qArcBall;

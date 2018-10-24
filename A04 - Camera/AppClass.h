@@ -18,7 +18,7 @@ class Application
 {
 	MyCamera* m_pCamera = nullptr; //Camera class
 	MyMeshManager* m_pMyMeshMngr = nullptr; //My Mesh Manager
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //Programmer
+	String m_sProgrammer = "Jonathan So - jds7523@rit.edu"; //Programmer
 private:
 	static ImGuiObject gui; //GUI object
 

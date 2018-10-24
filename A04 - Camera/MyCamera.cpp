@@ -150,13 +150,33 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+/** Given the orientation of our camera, move forward by changing the target, above, and position.
+ * param[a_fDistance] - The distance we want to move for each call. Basically acts as speed.
+ */
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	// Calculate a normalized direction vector and move "forward" in that direction.
+	// Both the position and the target are in world coordinates. Target - Position = Direction.
+	vector3 dir = glm::normalize(m_v3Target - m_v3Position); // Forward
+	m_v3Target += vector3(dir.x * a_fDistance, dir.y * a_fDistance, dir.z * a_fDistance);
+	m_v3Above += vector3(dir.x * a_fDistance, dir.y * a_fDistance, dir.z * a_fDistance);
+	m_v3Position += vector3(dir.x * a_fDistance, dir.y * a_fDistance, dir.z * a_fDistance);
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance){
+	
+}
+
+/** Given the orientation of our camera, move sideways by changing the target, above, and position.
+* param[a_fDistance] - The distance we want to move for each call. Basically acts as speed.
+*/
+void MyCamera::MoveSideways(float a_fDistance){
+	// Calculate a normalized direction vector and a normalized up vector (separate from m_v3Above).
+	vector3 dir = glm::normalize(m_v3Target - m_v3Position);
+	vector3 upVec = glm::normalize(m_v3Above - m_v3Position);
+	// Then, take the cross product of the two so that we get a vector facing "right" (or "left") of our current camera position.
+	vector3 cross = glm::cross(dir, upVec);
+	m_v3Target += vector3(cross.x * -a_fDistance, cross.y * -a_fDistance, cross.z * -a_fDistance);
+	m_v3Above += vector3(cross.x * -a_fDistance, cross.y * -a_fDistance, cross.z * -a_fDistance);
+	m_v3Position += vector3(cross.x * -a_fDistance, cross.y * -a_fDistance, cross.z * -a_fDistance);
+}
