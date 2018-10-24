@@ -36,7 +36,6 @@ void Application::DrawGUI(void)
 			ImGui::Text("Control:\n");
 			ImGui::Text("   WASD: Movement\n");
 			ImGui::Text("Right Click + move: Rotate line of view\n");
-
 		}
 		ImGui::End();
 	}

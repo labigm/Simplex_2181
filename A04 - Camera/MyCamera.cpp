@@ -163,8 +163,15 @@ void MyCamera::MoveForward(float a_fDistance)
 	m_v3Position += vector3(dir.x * a_fDistance, dir.y * a_fDistance, dir.z * a_fDistance);
 }
 
+/** Given the orientation of our camera, move vertically by changing the target, above, and position.
+* param[a_fDistance] - The distance we want to move for each call. Basically acts as speed.
+*/
 void MyCamera::MoveVertical(float a_fDistance){
-	
+	// Just calculate the up vector to help us move vertically.
+	vector3 upVec = glm::normalize(m_v3Above - m_v3Position);
+	m_v3Target += vector3(upVec.x * -a_fDistance, upVec.y * -a_fDistance, upVec.z * -a_fDistance);
+	m_v3Above += vector3(upVec.x * -a_fDistance, upVec.y * -a_fDistance, upVec.z * -a_fDistance);
+	m_v3Position += vector3(upVec.x * -a_fDistance, upVec.y * -a_fDistance, upVec.z * -a_fDistance);
 }
 
 /** Given the orientation of our camera, move sideways by changing the target, above, and position.

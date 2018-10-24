@@ -369,28 +369,19 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
-	
-	// I believe that I've found a way to express the rotation as a quaternion, problem is that 
-	// I don't know how to apply this quaternion rotation to a vector3 and relate it in a sensible way to the m_v3Target.
+	vector3 dir = (m_pCamera->GetTarget() - m_pCamera->GetPosition()); // Forward vector
+	// Create quaternions of the rotation on X and Y
+	quaternion orientationX;
+	quaternion orientationY;
+	vector3 fwd = glm::normalize(m_pCamera->GetTarget() - m_pCamera->GetPosition()); // A forward vector
+	vector3 upVec = glm::normalize(m_pCamera->GetAbove() - m_pCamera->GetPosition()); // An up vector
+	orientationX = orientationX * glm::angleAxis(fAngleY, upVec); // Rotates on the X component using the up vector.
+	orientationY = orientationY * glm::angleAxis(-fAngleX, glm::cross(fwd, upVec)); // Rotates on the Y component using the right vector (cross product of forward and up).
+	matrix4 m4_orientation = glm::toMat4(orientationX * orientationY); // Convert that combined rotation quaternion to a mat4.
+	vector4 v4dir = vector4(dir.x, dir.y, dir.z, 1.0f); // Vector4 version of our dir vector.
+	vector4 result = m4_orientation * v4dir; // Multiply the rotation matrix to the direction v4. This is our rotated forward vector.
 
-/*
-	quaternion orientation = glm::toQuat(m_pCamera->GetViewMatrix()); // UNUSED SO FAR
-	orientation *= glm::angleAxis(fAngleY, AXIS_X);
-	orientation *= glm::angleAxis(fAngleX, AXIS_Y);
-	*/
-	
-	// m_pCamera->SetTarget(vector3(-fAngleY * 2 * PI, 0.0f, (fAngleX / 2) * PI)); // DOES NOT ACTUALLY WORK, WILL MOVE IN WORLD COORDS NOT CAMERA VIEW	
-	// m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x  + fAngleY, m_pCamera->GetTarget().y, m_pCamera->GetTarget().z + fAngleX)); // DOES NOT ACTUALLY WORK, WILL MOVE IN WORLD COORDS NOT CAMERA VIEW	
-
-	//m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x + fAngleY, m_pCamera->GetTarget().y + fAngleX, m_pCamera->GetTarget().z)); // I think that my solution has been Gimbal Locked.
-	// After rotating 90 degrees, it limits the user to only being able to rotate in one axis...
-
-	// m_pCamera->SetTarget(glm::eulerAngles(orientation)); // EulerAngles I remember has problems.
-
-	// This solution is patterned after E08.
-	quaternion orientation; 
-	orientation = orientation * glm::angleAxis(fAngleY, AXIS_X);
-	orientation = orientation * glm::angleAxis(fAngleX, AXIS_Y);
+	m_pCamera->SetTarget(m_pCamera->GetPosition() + vector3(result.x, result.y, result.z)); // Apply the rotated vector to the position as its new target
 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
@@ -420,12 +411,12 @@ void Application::ProcessKeyboard(void)
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCamera->MoveSideways(-fSpeed); // And vice-versa for the right.
 	
-	/*
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	// Vertical movement behaves similarly to the solution's build.
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) // Move downwards.
 		m_pCamera->MoveVertical(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) // Move upwards.
 		m_pCamera->MoveVertical(-fSpeed);
-	*/
+	
 
 #pragma endregion
 }
@@ -454,7 +445,6 @@ void Application::ProcessJoystick(void)
 #pragma endregion
 #pragma region Camera Orientation
 	//Change the Yaw and the Pitch of the camera
-// #TODO
 	
 
 #pragma endregion
