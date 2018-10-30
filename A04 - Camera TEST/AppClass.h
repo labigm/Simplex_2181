@@ -10,32 +10,20 @@ Date: 2017/05
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
-#include "MyRigidBody.h"
+#include "MyMeshManager.h"
 namespace Simplex
 {
 
 class Application
 {
-	vector3 m_v3Creeper; //position of the creeper
-	Model* m_pCreeper = nullptr; //model to display
-	Model* m_pSteve = nullptr; //model to display
-
-	quaternion m_qCreeper; //quaterion for the creeper
-
-	MyRigidBody* m_pCreeperRB = nullptr; //Rigid Body of the model
-	MyRigidBody* m_pSteveRB = nullptr; //Rigid Body of the model
-	
-	String m_sProgrammer = "Jonathan So - jds7523@rit.edu"; //programmer
-
+	MyCamera* m_pCamera = nullptr; //Camera class
+	MyMeshManager* m_pMyMeshMngr = nullptr; //My Mesh Manager
+	String m_sProgrammer = "Jonathan So - jds7523@rit.edu"; //Programmer
 private:
 	static ImGuiObject gui; //GUI object
 
 	uint m_uRenderCallCount = 0; //count of render calls per frame
 	uint m_uControllerCount = 0; //count of controllers connected
-
-	bool m_bFocused = true; //is the window focused?
-
-	float m_fMovementSpeed = 0.1f; //how fast the camera will move
 
 	vector3 m_v3Mouse = vector3(); //position of the mouse in the window
 	bool m_bFPC = false;// First Person Camera flag
@@ -44,7 +32,6 @@ private:
 
 	vector4 m_v4ClearColor; //Color of the scene
 	bool m_bRunning = false; //Is app running?
-	bool m_bModifier = false; //is shift pressed?
 
 	sf::Window* m_pWindow = nullptr; //SFML window
 	Simplex::SystemSingleton* m_pSystem = nullptr; //Singleton of the system

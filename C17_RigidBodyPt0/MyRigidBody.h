@@ -25,10 +25,10 @@ class MyRigidBody
 	vector3 m_v3MinL = vector3(0.0f); //minimum coordinate in local space
 	vector3 m_v3MaxL = vector3(0.0f); //maximum coordinate in local space
 
-	vector3 m_v3MinG = vector3(0.0f); //minimum coordinate in local space
-	vector3 m_v3MaxG = vector3(0.0f); //maximum coordinate in local space
+	vector3 m_v3MinG = vector3(0.0f); //minimum coordinate in global space
+	vector3 m_v3MaxG = vector3(0.0f); //maximum coordinate in global space
 
-	vector3 m_v3HalfWidth = vector3(0.0f); //half the size of all sides
+	vector3 m_v3HalfWidth = vector3(0.0f); //half the size of all sides; difference between min/max for X, Y, and Z, divided by 2
 
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 

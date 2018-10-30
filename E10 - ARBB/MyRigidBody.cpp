@@ -87,7 +87,55 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	//your code goes here---------------------
 	m_v3MinG = m_v3MinL;
 	m_v3MaxG = m_v3MaxL;
-	//----------------------------------------
+
+	// As described in 12C - ARBB, first find the 8 corners of the Oriented Bounding Box.
+	// We will use the MaxL and MinL vectors to get the eight corners.
+	std::vector<vector3> corners;
+	corners.push_back(m_v3MinL); // Back, Bottom-Left
+	corners.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z)); // Back, Bottom-Right
+	corners.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z)); // Back, Top-Left
+	corners.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z)); // Back, Top-Right
+	corners.push_back(m_v3MaxL); // Front, Bottom-Left
+	corners.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z)); // Front, Bottom-Right
+	corners.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z)); // Front, Top-Left
+	corners.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MaxL.z)); // Front, Top-Right
+
+	// Now, these are in local space, so we must globalize each of them 
+	// by multiplying them by the m_m4ToWorld.
+	for (uint i = 0; i < corners.size(); i++) {
+		corners[i] = vector3(m_m4ToWorld * vector4(corners[i], 1));
+	}
+
+	// Find the min and max for those 8 corners -- now globalized, so it's a bit different from in-class.
+	m_v3MinG = corners[0];
+	m_v3MaxG = corners[0];
+
+	// Check the minimums
+	for (uint i = 1; i < corners.size(); i++) {
+		if (m_v3MinG.x > corners[i].x) {
+			m_v3MinG.x = corners[i].x;
+		}
+		if (m_v3MinG.y > corners[i].y) {
+			m_v3MinG.y = corners[i].y;
+		}
+		if (m_v3MinG.z > corners[i].z) {
+			m_v3MinG.z = corners[i].z;
+		}
+	}
+
+	// Check the maximums
+	for (uint i = 1; i < corners.size(); i++) {
+		if (m_v3MaxG.x < corners[i].x) {
+			m_v3MaxG.x = corners[i].x;
+		}
+		if (m_v3MaxG.y < corners[i].y) {
+			m_v3MaxG.y = corners[i].y;
+		}
+		if (m_v3MaxG.z < corners[i].z) {
+			m_v3MaxG.z = corners[i].z;
+		}
+	}
+	
 
 	//we calculate the distance between min and max vectors
 	m_v3ARBBSize = m_v3MaxG - m_v3MinG;

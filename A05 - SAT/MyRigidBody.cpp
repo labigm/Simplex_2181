@@ -286,7 +286,49 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	Simplex that might help you [eSATResults] feel free to use it.
 	(eSATResults::SAT_NONE has a value of 0)
 	*/
+	
+	// Get list of axes to test -- 3 normals from the first object, 3 normals from the second, and 9 from the cross products of all of the edges between the two objects.
+	std::vector<vector3> axes;
+// https://gamedev.stackexchange.com/questions/44500/how-many-and-which-axes-to-use-for-3d-obb-collision-with-sat
+	// http://www.dyn4j.org/2010/01/sat/#sat-top
 
+	// Probably calculate the vertices in global coordinates for this RB as well as the a_pOther one.
+	//Calculate the 8 corners of the cube
+	vector3 v3Corner[8];
+	//Back square
+	v3Corner[0] = m_v3MinL;
+	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
+	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
+	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
+
+	//Front square
+	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
+	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
+	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
+	v3Corner[7] = m_v3MaxL;
+
+	//Place them in world space
+	for (uint uIndex = 0; uIndex < 8; ++uIndex)	{
+		v3Corner[uIndex] = vector3(m_m4ToWorld * vector4(v3Corner[uIndex], 1.0f));
+	}
+	
+
+	// First, obtain the normals of the first object.
+	// Then, obtain the normals of the second object.
+	// Finally, use the cross product to gain an additional 9 axes.
+
+	// For each axis...
+	// Project both shapes onto the axis. 
+	// If they do not overlap,
+	// Then the shapes do not overlap.
+	// Otherwise, we can guarantee that the shapes have intersected.
+	
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
+}
+
+vector3[] GetVertices(MyRigidbody& a_rb) {
+	vector3 result[8];
+	result[0] = a_rb.GetMinLocal();
+	// ...
 }
