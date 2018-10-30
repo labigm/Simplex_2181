@@ -291,29 +291,10 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	std::vector<vector3> axes;
 // https://gamedev.stackexchange.com/questions/44500/how-many-and-which-axes-to-use-for-3d-obb-collision-with-sat
 	// http://www.dyn4j.org/2010/01/sat/#sat-top
-
-	// Probably calculate the vertices in global coordinates for this RB as well as the a_pOther one.
-	//Calculate the 8 corners of the cube
-	vector3 v3Corner[8];
-	//Back square
-	v3Corner[0] = m_v3MinL;
-	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
-	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
-	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
-
-	//Front square
-	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
-	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
-	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
-	v3Corner[7] = m_v3MaxL;
-
-	//Place them in world space
-	for (uint uIndex = 0; uIndex < 8; ++uIndex)	{
-		v3Corner[uIndex] = vector3(m_m4ToWorld * vector4(v3Corner[uIndex], 1.0f));
-	}
+	// First, obtain the normals of the first object.
+	// Get the globalized vertices of the first object.
 	
 
-	// First, obtain the normals of the first object.
 	// Then, obtain the normals of the second object.
 	// Finally, use the cross product to gain an additional 9 axes.
 
@@ -327,8 +308,21 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	return eSATResults::SAT_NONE;
 }
 
-vector3[] GetVertices(MyRigidbody& a_rb) {
-	vector3 result[8];
-	result[0] = a_rb.GetMinLocal();
-	// ...
+std::vector<vector3> GetVertices(MyRigidBody* const rb) {
+	std::vector<vector3> result;
+	result.push_back(rb->GetMinLocal()); // Back, Bottom-Left
+	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMinLocal().y, rb->GetMinLocal().z)); // Back, Bottom-Right
+	result.push_back(vector3(rb->GetMinLocal().x, rb->GetMaxLocal().y, rb->GetMinLocal().z)); // Back, Top-Left
+	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMaxLocal().y, rb->GetMinLocal().z)); // Back, Top-Right
+	result.push_back(rb->GetMaxLocal()); // Front, Bottom-Left
+	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMinLocal().y, rb->GetMaxLocal().z)); // Front, Bottom-Right
+	result.push_back(vector3(rb->GetMinLocal().x, rb->GetMaxLocal().y, rb->GetMaxLocal().z)); // Front, Top-Left
+	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMaxLocal().y, rb->GetMaxLocal().z)); // Front, Top-Right
+
+	// Now, these are in local space, so we must globalize each of them 
+	// by multiplying them by the m_m4ToWorld.
+	for (uint i = 0; i < result.size(); i++) {
+		result[i] = vector3(m_m4ToWorld * vector4(result[i], 1));
+	}
+	return result;
 }

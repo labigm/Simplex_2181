@@ -95,10 +95,10 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	corners.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z)); // Back, Bottom-Right
 	corners.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z)); // Back, Top-Left
 	corners.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z)); // Back, Top-Right
-	corners.push_back(m_v3MaxL); // Front, Bottom-Left
+	corners.push_back(vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z)); // Front, Bottom-Left
 	corners.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z)); // Front, Bottom-Right
 	corners.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z)); // Front, Top-Left
-	corners.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MaxL.z)); // Front, Top-Right
+	corners.push_back(m_v3MaxL); // Front, Top-Right
 
 	// Now, these are in local space, so we must globalize each of them 
 	// by multiplying them by the m_m4ToWorld.
