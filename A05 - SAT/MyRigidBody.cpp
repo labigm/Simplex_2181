@@ -277,7 +277,7 @@ void MyRigidBody::AddToRenderList(void)
 /** Provide accurate collision detection for two ARBBs.
  * Tests fifteen different planes (axes) to see if the two RigidBodies are contacting.
  * param[a_pOther] - the other RigidBody we're testing.
- * return - an eSATResults enum stating whether or not we're contacting with another ARBB.
+ * return - an eSATResults enum stating whether or not we're contacting with another ARBB, denoting the axis in question.
  */
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
@@ -318,19 +318,14 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	// From the Orange Book, express the other RB in this RB's coordinate frame.
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			
 			rot[i][j] = glm::dot(axes[i], axes[j + 3]);
 			absRot[i][j] = glm::abs(rot[i][j]);
-			
-			/*
-			rot[i][j] = glm::dot(localAxes[i], localAxes[j]);
-			absRot[i][j] = glm::abs(rot[i][j]);
-			*/
 		}
 	}
 	vector3 t = a_pOther->GetCenterGlobal() - this->GetCenterGlobal(); // Translation vector
-	t = vector3(glm::dot(t, xAxis), glm::dot(t, yAxis), glm::dot(t, zAxis)); // Bring the translation into this RB's coordinate frame
+	t = vector3(glm::dot(t, AXIS_X), glm::dot(t, AXIS_Y), glm::dot(t, AXIS_Z)); // Bring the translation into this RB's coordinate frame
 
+	// Begin testing all 15 axes to see if we can draw said plane in between the two shapes.
 	// Test Ax, Ay, Az
 	for (int i = 0; i < 3; i++) {
 		ra = m_v3HalfWidth[i];
@@ -415,7 +410,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	if (glm::abs(t[1] * rot[0][2] - t[0] * rot[1][2]) > ra + rb) {
 		return eSATResults::SAT_AZxBZ;
 	}
-
+	// After testing all fifteen axes without a return, 
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
 }
