@@ -176,6 +176,22 @@ void MyRigidBody::AddToRenderList(void)
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
 	// Bounding sphere check
-	bool bColliding = false;
-	vector3......
+	vector3 v3C1 = m_m4ToWorld * vector4(m_v3Center, 1.0f);
+	vector3 v3C2 = other->m_m4ToWorld * vector4(other->m_v3Center, 1.0f);
+	vector3 v3Max1 = m_m4ToWorld * vector4(m_v3MaxL, 1.0f);
+	vector3 v3Min1 = m_m4ToWorld * vector4(m_v3MinL, 1.0f);
+	vector3 v3Max2 = other->m_m4ToWorld * vector4(other->m_v3MaxL, 1.0f);
+	vector3 v3Min2 = other->m_m4ToWorld * vector4(other->m_v3MinL, 1.0f);
+
+	bool bColliding = true;
+	if (m_v3MaxL.x < other->m_v3MinL.x || v3Min1.x > v3Max1.x) {
+		return false;
+	}
+	if (m_v3MaxL.y < other->m_v3MinL.y || v3Min1.y > v3Max1.y) {
+		return false;
+	}
+	if (m_v3MaxL.y < other->m_v3MinL.y || v3Min1.y > v3Max1.y) {
+		return false;
+	}
+
 }

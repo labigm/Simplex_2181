@@ -274,55 +274,148 @@ void MyRigidBody::AddToRenderList(void)
 	}
 }
 
+/** Provide accurate collision detection for two ARBBs.
+ * Tests fifteen different planes (axes) to see if the two RigidBodies are contacting.
+ * param[a_pOther] - the other RigidBody we're testing.
+ * return - an eSATResults enum stating whether or not we're contacting with another ARBB.
+ */
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
-
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
-	
 	// Get list of axes to test -- 3 normals from the first object, 3 normals from the second, and 9 from the cross products of all of the edges between the two objects.
 	std::vector<vector3> axes;
-// https://gamedev.stackexchange.com/questions/44500/how-many-and-which-axes-to-use-for-3d-obb-collision-with-sat
-	// http://www.dyn4j.org/2010/01/sat/#sat-top
-	// First, obtain the normals of the first object.
-	// Get the globalized vertices of the first object.
-	
 
-	// Then, obtain the normals of the second object.
-	// Finally, use the cross product to gain an additional 9 axes.
+	// Globalize the local axes (X, Y, and Z) to this RigidBody, adding them to the list of Axes.
+	axes.push_back(glm::normalize(vector4(AXIS_X, 0.0f) * m_m4ToWorld)); // X; ind 0
+	axes.push_back(glm::normalize(vector4(AXIS_Y, 0.0f) * m_m4ToWorld)); // Y; ind 1
+	axes.push_back(glm::normalize(vector4(AXIS_Z, 0.0f) * m_m4ToWorld)); // Z; ind 2
+	// Globalize them to the other RigidBody and add them to the list of Axes.
+	axes.push_back(glm::normalize(vector4(AXIS_X, 0.0f) * a_pOther->GetModelMatrix())); // X; ind 3
+	axes.push_back(glm::normalize(vector4(AXIS_Y, 0.0f) * a_pOther->GetModelMatrix())); // Y; ind 4
+	axes.push_back(glm::normalize(vector4(AXIS_Z, 0.0f) * a_pOther->GetModelMatrix())); // Z; ind 5
+	// Furthermore, get the remaining nine axes by obtaining the cross products 
+	// between the axes of the first and second RigidBodies (A and B respectively).
+	axes.push_back(glm::normalize(glm::cross(axes[0], axes[3]))); // Ax X Bx; ind 6
+	axes.push_back(glm::normalize(glm::cross(axes[0], axes[4]))); // Ax X By; ind 7
+	axes.push_back(glm::normalize(glm::cross(axes[0], axes[5]))); // Ax X Bz; ind 8
 
-	// For each axis...
-	// Project both shapes onto the axis. 
-	// If they do not overlap,
-	// Then the shapes do not overlap.
-	// Otherwise, we can guarantee that the shapes have intersected.
+	axes.push_back(glm::normalize(glm::cross(axes[1], axes[3]))); // Ay X Bx; ind 9
+	axes.push_back(glm::normalize(glm::cross(axes[1], axes[4]))); // Ay X By; ind 10
+	axes.push_back(glm::normalize(glm::cross(axes[1], axes[5]))); // Ay X Bz; ind 11
+
+	axes.push_back(glm::normalize(glm::cross(axes[2], axes[3]))); // Az X Bx; ind 12
+	axes.push_back(glm::normalize(glm::cross(axes[2], axes[4]))); // Az X By; ind 13
+	axes.push_back(glm::normalize(glm::cross(axes[2], axes[5]))); // Az X Bz; ind 14
 	
+	/** The two RigidBodies are separated on this axis if the magnitude of the dot product
+	* between the distance between the two RigidBodies and the axis in question is greater
+	* than the sum of the two radii of the RigidBodies.
+	*
+	* Heavily based on the solution found in the Real-Time Collision Detection book by Ericson.
+	*/
+	// Calculate the rotation 3x3 matrix.
+	matrix3 rot, absRot;
+	float ra, rb;
+	// From the Orange Book, express the other RB in this RB's coordinate frame.
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			
+			rot[i][j] = glm::dot(axes[i], axes[j + 3]);
+			absRot[i][j] = glm::abs(rot[i][j]);
+			
+			/*
+			rot[i][j] = glm::dot(localAxes[i], localAxes[j]);
+			absRot[i][j] = glm::abs(rot[i][j]);
+			*/
+		}
+	}
+	vector3 t = a_pOther->GetCenterGlobal() - this->GetCenterGlobal(); // Translation vector
+	t = vector3(glm::dot(t, xAxis), glm::dot(t, yAxis), glm::dot(t, zAxis)); // Bring the translation into this RB's coordinate frame
+
+	// Test Ax, Ay, Az
+	for (int i = 0; i < 3; i++) {
+		ra = m_v3HalfWidth[i];
+		rb = (a_pOther->GetHalfWidth().x * absRot[i][0]) + (a_pOther->GetHalfWidth().y * absRot[i][1]) + (a_pOther->GetHalfWidth().z * absRot[i][2]);
+		if (glm::abs(t[i]) > ra + rb) {
+			if (i == 0) { return eSATResults::SAT_AX; }
+			else if (i == 1) { return eSATResults::SAT_AY; }
+			else { return eSATResults::SAT_AZ; }
+		}
+	}
+
+	// Test Bx, By, Bz
+	for (int i = 0; i < 3; i++) {
+		ra = (m_v3HalfWidth.x * absRot[0][i]) + (m_v3HalfWidth.y * absRot[1][i]) + (m_v3HalfWidth.z * absRot[2][i]);
+		rb = a_pOther->GetHalfWidth()[i];
+		if (glm::abs(t[0] * rot[0][i] + t[1] * rot[1][i] + t[2] * rot[2][i]) > ra + rb) {
+			if (i == 0) { return eSATResults::SAT_BX; }
+			else if (i == 1) { return eSATResults::SAT_BY; }
+			else { return eSATResults::SAT_BZ; }
+		}
+	}
+
+	// Test Ax X Bx
+	ra = m_v3HalfWidth.y * absRot[2][0] + m_v3HalfWidth.z * absRot[1][0];
+	rb = a_pOther->GetHalfWidth().y * absRot[0][2] + a_pOther->GetHalfWidth().z * absRot[0][1];
+	if (glm::abs(t[2] * rot[1][0] - t[1] * rot[2][0]) > ra + rb) {
+		return eSATResults::SAT_AXxBX;
+	}
+
+	// Test Ax X By
+	ra = m_v3HalfWidth.y * absRot[2][1] + m_v3HalfWidth.z * absRot[1][1];
+	rb = a_pOther->GetHalfWidth().x * absRot[0][2] + a_pOther->GetHalfWidth().z * absRot[0][0];
+	if (glm::abs(t[2] * rot[1][1] - t[1] * rot[2][1]) > ra + rb) {
+		return eSATResults::SAT_AXxBY;
+	}
+
+	// Test Ax X Bz
+	ra = m_v3HalfWidth.y * absRot[2][2] + m_v3HalfWidth.z * absRot[1][2];
+	rb = a_pOther->GetHalfWidth().x * absRot[0][1] + a_pOther->GetHalfWidth().y * absRot[0][0];
+	if (glm::abs(t[2] * rot[1][2] - t[1] * rot[2][2]) > ra + rb) {
+		return eSATResults::SAT_AXxBZ;
+	}
+
+	// Test Ay x Bx
+	ra = m_v3HalfWidth.x * absRot[2][0] + m_v3HalfWidth.z * absRot[0][0];
+	rb = a_pOther->GetHalfWidth().y * absRot[1][2] + a_pOther->GetHalfWidth().z * absRot[1][1];
+	if (glm::abs(t[0] * rot[2][0] - t[2] * rot[0][0]) > ra + rb) {
+		return eSATResults::SAT_AYxBX;
+	}
+
+	// Test Ay x By
+	ra = m_v3HalfWidth.x * absRot[2][1] + m_v3HalfWidth.z * absRot[0][1];
+	rb = a_pOther->GetHalfWidth().x * absRot[1][2] + a_pOther->GetHalfWidth().z * absRot[1][0];
+	if (glm::abs(t[0] * rot[2][1] - t[2] * rot[0][1]) > ra + rb) {
+		return eSATResults::SAT_AYxBY;
+	}
+
+	// Test Ay x Bz
+	ra = m_v3HalfWidth.x * absRot[2][2] + m_v3HalfWidth.z * absRot[0][2];
+	rb = a_pOther->GetHalfWidth().x * absRot[1][1] + a_pOther->GetHalfWidth().y * absRot[1][0];
+	if (glm::abs(t[0] * rot[2][2] - t[2] * rot[0][2]) > ra + rb) {
+		return eSATResults::SAT_AYxBZ;
+	}
+
+	// Test Az x Bx
+	ra = m_v3HalfWidth.x * absRot[1][0] + m_v3HalfWidth.y * absRot[0][0];
+	rb = a_pOther->GetHalfWidth().y * absRot[2][2] + a_pOther->GetHalfWidth().z * absRot[2][1];
+	if (glm::abs(t[1] * rot[0][0] - t[0] * rot[1][0]) > ra + rb) {
+		return eSATResults::SAT_AZxBX;
+	}
+
+	// Test Az x By
+	ra = m_v3HalfWidth.x * absRot[1][1] + m_v3HalfWidth.y * absRot[0][1];
+	rb = a_pOther->GetHalfWidth().x * absRot[2][2] + a_pOther->GetHalfWidth().z * absRot[2][0];
+	if (glm::abs(t[1] * rot[0][1] - t[0] * rot[1][1]) > ra + rb) {
+		return eSATResults::SAT_AZxBY;
+	}
+
+	// Test Az x Bz
+	ra = m_v3HalfWidth.x * absRot[1][2] + m_v3HalfWidth.y * absRot[0][2];
+	rb = a_pOther->GetHalfWidth().x * absRot[2][1] + a_pOther->GetHalfWidth().y * absRot[2][0];
+	if (glm::abs(t[1] * rot[0][2] - t[0] * rot[1][2]) > ra + rb) {
+		return eSATResults::SAT_AZxBZ;
+	}
+
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
-}
-
-std::vector<vector3> GetVertices(MyRigidBody* const rb) {
-	std::vector<vector3> result;
-	result.push_back(rb->GetMinLocal()); // Back, Bottom-Left
-	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMinLocal().y, rb->GetMinLocal().z)); // Back, Bottom-Right
-	result.push_back(vector3(rb->GetMinLocal().x, rb->GetMaxLocal().y, rb->GetMinLocal().z)); // Back, Top-Left
-	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMaxLocal().y, rb->GetMinLocal().z)); // Back, Top-Right
-	result.push_back(rb->GetMaxLocal()); // Front, Bottom-Left
-	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMinLocal().y, rb->GetMaxLocal().z)); // Front, Bottom-Right
-	result.push_back(vector3(rb->GetMinLocal().x, rb->GetMaxLocal().y, rb->GetMaxLocal().z)); // Front, Top-Left
-	result.push_back(vector3(rb->GetMaxLocal().x, rb->GetMaxLocal().y, rb->GetMaxLocal().z)); // Front, Top-Right
-
-	// Now, these are in local space, so we must globalize each of them 
-	// by multiplying them by the m_m4ToWorld.
-	for (uint i = 0; i < result.size(); i++) {
-		result[i] = vector3(m_m4ToWorld * vector4(result[i], 1));
-	}
-	return result;
 }
