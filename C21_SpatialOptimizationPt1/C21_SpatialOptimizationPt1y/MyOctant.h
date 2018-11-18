@@ -2,52 +2,64 @@
 Programmer: Alberto Bobadilla (labigm@gmail.com)
 Date: 2017/06
 ----------------------------------------------*/
-#ifndef __EXAMPLECLASS_H_
-#define __EXAMPLECLASS_H_
+#ifndef __MYOCTANT_H_
+#define __MYOCTANT_H_
 
 #include "Simplex\Simplex.h"
+#include "MyEntityManager.h"
 
 namespace Simplex
 {
 
 //System Class
-class ExampleClass
+class MyOctant
 {
 	int m_nData = 0; //Number of elements in the list of elements
 	std::vector<int> m_lData; //list of elements
-
+	MeshManager* m_pMeshMngr = nullptr; //Pointer to Mesh manager
+	MyEntityManager* m_pEntityMngr = nullptr;
+	MyRigidBody* m_pRigidBody = nullptr;
+	uint m_iID = 0;
+	static uint m_nCount;
+	MyOctant* m_pParent = nullptr;
+	MyOctant* m_pChild[8];
+	uint m_nLevel = 0;
 public:
+	void Display(void);
+	void IsColliding(void);
+	void Subdivide(void);
+	MyOctant(vector3 a_v3Center, float a_fSize);
 	/*
 	Usage: Constructor
 	Arguments: ---
 	Output: class object instance
 	*/
-	ExampleClass(void);
+	MyOctant(void);
 	/*
 	Usage: Copy Constructor
 	Arguments: class object to copy
 	Output: class object instance
 	*/
-	ExampleClass(ExampleClass const& other);
+	MyOctant(MyOctant const& other);
 	/*
 	Usage: Copy Assignment Operator
 	Arguments: class object to copy
 	Output: ---
 	*/
-	ExampleClass& operator=(ExampleClass const& other);
+	MyOctant& operator=(MyOctant const& other);
 	/*
 	Usage: Destructor
 	Arguments: ---
 	Output: ---
 	*/
-	~ExampleClass(void);
+	~MyOctant(void);
 
 	/*
 	Usage: Changes object contents for other object's
 	Arguments: other -> object to swap content from
 	Output: ---
 	*/
-	void Swap(ExampleClass& other);
+	void Swap(MyOctant& other);
 
 	/*
 	Usage: Gets data member
@@ -94,7 +106,7 @@ private:
 
 } //namespace Simplex
 
-#endif //__EXAMPLECLASS_H__
+#endif //__MYOCTANT_H_
 
 /*
 USAGE:

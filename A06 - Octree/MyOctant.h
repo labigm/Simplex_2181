@@ -25,6 +25,8 @@ class MyOctant
 
 	MeshManager* m_pMeshMngr = nullptr;//Mesh Manager singleton
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager Singleton
+	
+	MyRigidBody* m_pRigidBody = nullptr; // For ease of collisions, each MyOctant should have its own rigidbody.
 
 	vector3 m_v3Center = vector3(0.0f); //Will store the center point of the octant
 	vector3 m_v3Min = vector3(0.0f); //Will store the minimum vector of the octant
@@ -112,7 +114,8 @@ public:
 	- int a_uRBIndex -> Index of the Entity in the Entity Manager
 	OUTPUT: check of the collision
 	*/
-	bool IsColliding(uint a_uRBIndex);
+//	bool IsColliding(uint a_uRBIndex);
+	bool IsColliding();
 	/*
 	USAGE: Displays the MyOctant volume specified by index including the objects underneath
 	ARGUMENTS:
@@ -217,7 +220,8 @@ private:
 	ARGUMENTS: ---
 	OUTPUT: ---
 	*/
-	void ConstructList(void);
+	void ConstructList(void);	
+
 };//class
 
 } //namespace Simplex
