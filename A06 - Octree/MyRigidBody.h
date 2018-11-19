@@ -43,6 +43,11 @@ class MyRigidBody
 	PRigidBody* m_CollidingArray = nullptr; //array of rigid bodies this one is colliding with
 
 public:
+	/*
+	Usage: Out of the X, Y, and Z dimensions, scales the size of the cube to the largest one.
+	Arguments: --
+	Output: --
+	*/
 	void MakeCubic(void);
 	/*
 	Usage: Constructor

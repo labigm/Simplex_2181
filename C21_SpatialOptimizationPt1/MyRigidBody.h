@@ -42,6 +42,11 @@ class MyRigidBody
 	std::set<MyRigidBody*> m_CollidingRBSet; //set of rigid bodies this one is colliding with
 
 public:
+	/*
+	Usage: Out of the X, Y, and Z dimensions, scales the size of the cube to the largest one.
+	Arguments: --
+	Output: --
+	*/
 	void MakeCubic(void);
 	/*
 	Usage: Constructor

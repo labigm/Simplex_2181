@@ -2,9 +2,10 @@
 Programmer: Alberto Bobadilla (labigm@gmail.com)
 Date: 2017/07
 ----------------------------------------------*/
-#ifndef __MYOCTANTCLASS_H_
-#define __MYOCTANTCLASS_H_
+#ifndef __MYOCTANT_H_
+#define __MYOCTANT_H_
 
+#include "Simplex\Simplex.h"
 #include "MyEntityManager.h"
 
 namespace Simplex
@@ -25,8 +26,6 @@ class MyOctant
 
 	MeshManager* m_pMeshMngr = nullptr;//Mesh Manager singleton
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager Singleton
-	
-	MyRigidBody* m_pRigidBody = nullptr; // For ease of collisions, each MyOctant should have its own rigidbody.
 
 	vector3 m_v3Center = vector3(0.0f); //Will store the center point of the octant
 	vector3 m_v3Min = vector3(0.0f); //Will store the minimum vector of the octant
@@ -40,6 +39,8 @@ class MyOctant
 	MyOctant* m_pRoot = nullptr;//Root octant
 	std::vector<MyOctant*> m_lChild; //list of nodes that contain objects (this will be applied to root only)
 	
+	MyRigidBody* m_pRigidBody = nullptr;
+
 public:
 	/*
 	USAGE: Constructor, will create an octant containing all MagnaEntities Instances in the Mesh 
@@ -114,7 +115,7 @@ public:
 	- int a_uRBIndex -> Index of the Entity in the Entity Manager
 	OUTPUT: check of the collision
 	*/
-//	bool IsColliding(uint a_uRBIndex);
+	//bool IsColliding(uint a_uRBIndex);
 	bool IsColliding();
 	/*
 	USAGE: Displays the MyOctant volume specified by index including the objects underneath
@@ -220,8 +221,7 @@ private:
 	ARGUMENTS: ---
 	OUTPUT: ---
 	*/
-	void ConstructList(void);	
-
+	void ConstructList(void);
 };//class
 
 } //namespace Simplex
