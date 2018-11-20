@@ -1,7 +1,7 @@
 #include "MyRigidBody.h"
 using namespace Simplex;
 
-void MyRigidBody::MakeCubic(void){
+void MyRigidBody::MakeCubic(void) {
 	float fSize = m_v3HalfWidth.x;
 	fSize = glm::max(fSize, m_v3HalfWidth.y);
 	fSize = glm::max(fSize, m_v3HalfWidth.z);
@@ -10,6 +10,7 @@ void MyRigidBody::MakeCubic(void){
 	m_v3MinL = m_v3MinG = m_v3CenterL - m_v3HalfWidth;
 	m_v3MaxL = m_v3MaxG = m_v3CenterL + m_v3HalfWidth;
 }
+
 
 //Allocation
 void MyRigidBody::Init(void)
@@ -288,19 +289,123 @@ void MyRigidBody::ClearCollidingList(void)
 }
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	vector3 v3CenterG_A = GetCenterGlobal();
+	vector3 v3HalfWidth_A = GetHalfWidth();
+	vector3 v3RotAxis_A[3];
+	v3RotAxis_A[0] = m_m4ToWorld[0];
+	v3RotAxis_A[1] = m_m4ToWorld[1];
+	v3RotAxis_A[2] = m_m4ToWorld[2];
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	vector3 v3CenterG_B = a_pOther->GetCenterGlobal();
+	vector3 v3HalfWidth_B = a_pOther->GetHalfWidth();
+	vector3 v3RotAxis_B[3];
+	v3RotAxis_B[0] = a_pOther->m_m4ToWorld[0];
+	v3RotAxis_B[1] = a_pOther->m_m4ToWorld[1];
+	v3RotAxis_B[2] = a_pOther->m_m4ToWorld[2];
 
-	//there is no axis test that separates this two objects
+	float ra, rb;
+	matrix3 R, AbsR;
+
+	// Compute rotation matrix expressing b in a's coordinate frame
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			R[i][j] = glm::dot(v3RotAxis_A[i], v3RotAxis_B[j]);
+
+	// Compute translation vector3 t
+	vector3 t = v3CenterG_B - v3CenterG_A;
+	// Bring translation into a's coordinate frame
+	t = vector3(glm::dot(t, v3RotAxis_A[0]), glm::dot(t, v3RotAxis_A[1]), glm::dot(t, v3RotAxis_A[2]));
+	// CAn multiply inverse of v3RotAxis_A * vector4(t, 1.0f);
+
+	// Compute common subexpressions. Add in an epsilon term to
+	// counteract arithmetic errors when two edges are parallel and
+	// their cross product is (near) null (see text for details)
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			AbsR[i][j] = glm::abs(R[i][j]) + 0.0001f;
+
+	// Test axes L = A0, L = A1, L = A2
+	for (int i = 0; i < 3; i++) {
+		ra = v3HalfWidth_A[i];
+		rb = v3HalfWidth_B[0] * AbsR[i][0] + v3HalfWidth_B[1] * AbsR[i][1] + v3HalfWidth_B[2] * AbsR[i][2];
+		if (glm::abs(t[i]) > ra + rb) {
+			if (i == 0) {
+				return 1;
+			}
+			else if (i == 1) {
+				return 1;
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+
+	// Test axes L = B0, L = B1, L = B2
+	for (int i = 0; i < 3; i++) {
+		ra = v3HalfWidth_A[0] * AbsR[0][i] + v3HalfWidth_A[1] * AbsR[1][i] + v3HalfWidth_A[2] * AbsR[2][i];
+		rb = v3HalfWidth_B[i];
+		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) {
+			if (i == 0) {
+				return 1;
+			}
+			else if (i == 1) {
+				return 1;
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+
+	// Test axis L = A0 x B0
+	ra = v3HalfWidth_A[1] * AbsR[2][0] + v3HalfWidth_A[2] * AbsR[1][0];
+	rb = v3HalfWidth_B[1] * AbsR[0][2] + v3HalfWidth_B[2] * AbsR[0][1];
+	if (glm::abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb) return 1;
+
+	// Test axis L = A0 x B1
+	ra = v3HalfWidth_A[1] * AbsR[2][1] + v3HalfWidth_A[2] * AbsR[1][1];
+	rb = v3HalfWidth_B[0] * AbsR[0][2] + v3HalfWidth_B[2] * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb) return 1;
+
+	// Test axis L = A0 x B2
+	ra = v3HalfWidth_A[1] * AbsR[2][2] + v3HalfWidth_A[2] * AbsR[1][2];
+	rb = v3HalfWidth_B[0] * AbsR[0][1] + v3HalfWidth_B[1] * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb) return 1;
+
+	// Test axis L = A1 x B0
+	ra = v3HalfWidth_A[0] * AbsR[2][0] + v3HalfWidth_A[2] * AbsR[0][0];
+	rb = v3HalfWidth_B[1] * AbsR[1][2] + v3HalfWidth_B[2] * AbsR[1][1];
+	if (glm::abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb) return 1;
+
+	// Test axis L = A1 x B1
+	ra = v3HalfWidth_A[0] * AbsR[2][1] + v3HalfWidth_A[2] * AbsR[0][1];
+	rb = v3HalfWidth_B[0] * AbsR[1][2] + v3HalfWidth_B[2] * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb) return 1;
+
+	// Test axis L = A1 x B2
+	ra = v3HalfWidth_A[0] * AbsR[2][2] + v3HalfWidth_A[2] * AbsR[0][2];
+	rb = v3HalfWidth_B[0] * AbsR[1][1] + v3HalfWidth_B[1] * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb) return 1;
+
+	// Test axis L = A2 x B0
+	ra = v3HalfWidth_A[0] * AbsR[1][0] + v3HalfWidth_A[1] * AbsR[0][0];
+	rb = v3HalfWidth_B[1] * AbsR[2][2] + v3HalfWidth_B[2] * AbsR[2][1];
+	if (glm::abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb) return 1;
+
+	// Test axis L = A2 x B1
+	ra = v3HalfWidth_A[0] * AbsR[1][1] + v3HalfWidth_A[1] * AbsR[0][1];
+	rb = v3HalfWidth_B[0] * AbsR[2][2] + v3HalfWidth_B[2] * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb) return 1;
+
+	// Test axis L = A2 x B2
+	ra = v3HalfWidth_A[0] * AbsR[1][2] + v3HalfWidth_A[1] * AbsR[0][2];
+	rb = v3HalfWidth_B[0] * AbsR[2][1] + v3HalfWidth_B[1] * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb) return 1;
+
+	// Since no separating axis is found, the OBBs must be intersecting
 	return 0;
+
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 {

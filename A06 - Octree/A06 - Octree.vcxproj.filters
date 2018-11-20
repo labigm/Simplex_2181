@@ -95,9 +95,6 @@
     <ClInclude Include="MyRigidBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MyOctant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\res\BTO.rc">

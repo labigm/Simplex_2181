@@ -49,6 +49,7 @@ public:
 	Output: --
 	*/
 	void MakeCubic(void);
+
 	/*
 	Usage: Constructor
 	Arguments: std::vector<vector3> a_pointList -> list of points to make the Rigid Body for
