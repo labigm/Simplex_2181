@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BB29A203-127B-46E9-A5B3-925715D5AA34}</ProjectGuid>
-    <RootNamespace>00_Sandbox</RootNamespace>
-    <ProjectName>00_Sandbox</ProjectName>
+    <ProjectGuid>{BE52867A-92EA-479A-9F73-1E96168F9A7B}</ProjectGuid>
+    <RootNamespace>01_Playgroud</RootNamespace>
+    <ProjectName>01_Playgroud</ProjectName>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -107,10 +107,6 @@ xcopy "$(SolutionDir)include\Simplex\Shaders" "$(SolutionDir)_Binary\Shaders" /y
     <ClCompile Include="AppClassMain.cpp" />
     <ClCompile Include="ControllerConfiguration.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MyEntity.cpp" />
-    <ClCompile Include="MyEntityManager.cpp" />
-    <ClCompile Include="MyRigidBody.cpp" />
-    <ClCompile Include="MySolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\imgui\imconfig.h" />
@@ -122,10 +118,6 @@ xcopy "$(SolutionDir)include\Simplex\Shaders" "$(SolutionDir)_Binary\Shaders" /y
     <ClInclude Include="ControllerConfiguration.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="MyEntity.h" />
-    <ClInclude Include="MyEntityManager.h" />
-    <ClInclude Include="MyRigidBody.h" />
-    <ClInclude Include="MySolver.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\res\BTO.rc" />

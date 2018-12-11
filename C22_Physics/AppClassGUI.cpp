@@ -1,6 +1,120 @@
 #include "AppClass.h"
 using namespace Simplex;
 ImGuiObject Application::gui;
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+struct ConsoleAndLog
+{
+	ImGuiTextBuffer			Buf;
+	char					InputBuf[256];
+	ImVector<const char*>	Commands;
+	ImGuiTextFilter			Filter;
+	ImVector<int>			LineOffsets; // Index to lines offset
+	bool					ScrollToBottom;
+
+	ConsoleAndLog()
+	{
+		Commands.push_back("CLEAR");
+		Commands.push_back("HELP");
+		Commands.push_back("PLAY");
+	}
+	void Clear() { Buf.clear(); LineOffsets.clear(); }
+	static int Stricmp(const char* str1, const char* str2) { int d; while ((d = toupper(*str2) - toupper(*str1)) == 0 && *str1) { str1++; str2++; } return d; }
+	void AddLog(const char* fmt, ...) IM_PRINTFARGS(2)
+	{
+		int old_size = Buf.size();
+		va_list args;
+		va_start(args, fmt);
+		Buf.appendv(fmt, args);
+		va_end(args);
+		for (int new_size = Buf.size(); old_size < new_size; old_size++)
+			if (Buf[old_size] == '\n')
+				LineOffsets.push_back(old_size);
+		ScrollToBottom = true;
+	}
+	void ExecCommand(const char* command_line)
+	{
+		AddLog("# %s\n", command_line);
+
+		// Process command
+		if (Stricmp(command_line, "CLEAR") == 0)
+		{
+			Clear();
+		}
+		else if (Stricmp(command_line, "HELP") == 0)
+		{
+			AddLog("Commands:");
+			for (int i = 0; i < Commands.Size; i++)
+				AddLog("- %s\n", Commands[i]);
+		}
+		else if (Stricmp(command_line, "PLAY") == 0)
+		{
+			AddLog("playing sound\n");
+		}
+		else
+		{
+			AddLog("Unknown command: '%s'\n", command_line);
+			AddLog("- HELP : list of commands\n");
+		}
+		//ImGui::LogToClipboard();
+		strcpy_s(InputBuf, 1, "");
+	}
+	String Draw(const char* title, bool* p_open = NULL)
+	{
+		String output = "";
+		float width = 500;
+		ImGui::Begin(title, p_open);
+
+		// Command-line
+		if (ImGui::InputText("", InputBuf, IM_ARRAYSIZE(InputBuf),
+			ImGuiInputTextFlags_EnterReturnsTrue,
+			NULL,
+			(void*)this))
+		{
+			char* input_end = InputBuf + strlen(InputBuf);
+			while (input_end > InputBuf && input_end[-1] == ' ') input_end--; *input_end = 0;
+			if (InputBuf[0])
+			{
+				output = InputBuf;
+				ExecCommand(InputBuf);
+			}
+		}
+		ImGui::SameLine();
+		bool enter = ImGui::Button("Execute");
+		if (enter)
+		{
+			output = InputBuf;
+			ExecCommand(InputBuf);
+		}
+
+		Filter.Draw("Filter", -150.0f);
+		ImGui::Separator();
+		ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+		if (Filter.IsActive())
+		{
+			const char* buf_begin = Buf.begin();
+			const char* line = buf_begin;
+			for (int line_no = 0; line != NULL; line_no++)
+			{
+				const char* line_end = (line_no < LineOffsets.Size) ? buf_begin + LineOffsets[line_no] : NULL;
+				if (Filter.PassFilter(line, line_end))
+					ImGui::TextUnformatted(line, line_end);
+				line = line_end && line_end[1] ? line_end + 1 : NULL;
+			}
+		}
+		else
+		{
+			ImGui::TextUnformatted(Buf.begin());
+		}
+
+		if (ScrollToBottom)
+			ImGui::SetScrollHere(1.0f);
+		ScrollToBottom = false;
+		ImGui::EndChild();
+		ImGui::End();
+
+		return output;
+	}
+};
 void Application::DrawGUI(void)
 {
 #pragma region Debugging Information
@@ -11,6 +125,9 @@ void Application::DrawGUI(void)
 	//m_pMeshMngr->Print("						");
 	m_pMeshMngr->PrintLine(m_pSystem->GetAppName(), C_YELLOW);
 	//m_pMeshMngr->Print("						");
+	m_pMeshMngr->Print("Press ");
+	m_pMeshMngr->Print("SpaceBar", C_BLUE);
+	m_pMeshMngr->PrintLine(" for sound!");
 
 	//m_pMeshMngr->Print("						");
 	m_pMeshMngr->Print("RenderCalls: ");//Add a line on top
@@ -18,7 +135,7 @@ void Application::DrawGUI(void)
 
 	//m_pMeshMngr->Print("						");
 	m_pMeshMngr->Print("FPS:");
-	m_pMeshMngr->PrintLine(std::to_string(m_pSystem->GetFPS()), C_RED);
+	m_pMeshMngr->Print(std::to_string(m_pSystem->GetFPS()), C_RED);
 #pragma endregion
 
 	//Calculate the window size to know how to draw
@@ -26,29 +143,127 @@ void Application::DrawGUI(void)
 
 	static ImVec4 v4Color = ImColor(255, 0, 0);
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
-	//Main Window
-	if (m_bGUI_Main)
+	//About
 	{
 		ImGui::SetNextWindowPos(ImVec2(1, 1), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(340, 60), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(315, 42), ImGuiSetCond_FirstUseEver);
 		String sAbout = m_pSystem->GetAppName() + " - About";
 		ImGui::Begin(sAbout.c_str(), (bool*)0, window_flags);
 		{
-			ImGui::Text("Programmer: \n");
 			ImGui::TextColored(v4Color, m_sProgrammer.c_str());
-			ImGui::Text("FrameRate: %.2f [FPS] -> %.3f [ms/frame]\n",
-				ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
-			ImGui::Separator();
-			ImGui::Text("Control:\n");
-			ImGui::Text("   WASD: Movement\n");
-			ImGui::Text("	 F1: Perspective\n");
-			ImGui::Text("	 F2: Orthographic X\n");
-			ImGui::Text("	 F3: Orthographic Y\n");
-			ImGui::Text("	 F4: Orthographic Z\n");
-			ImGui::Separator();
-			ImGui::Text("Arrows: Apply force to Steve\n");
 		}
 		ImGui::End();
+	}
+
+	//Main Window
+	if (m_bGUI_Main)
+	{
+		static float f = 0.0f;
+		ImGui::SetNextWindowPos(ImVec2(1, 44), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(315, 107), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowCollapsed(false, ImGuiSetCond_FirstUseEver);
+		String sWindowName = m_pSystem->GetAppName() + " - Main";
+		ImGui::Begin(sWindowName.c_str());
+		{
+			ImGui::Text("FrameRate: %.2f [FPS] -> %.3f [ms/frame] ",
+				ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+			ImGui::Text("RenderCalls: %d", m_uRenderCallCount);
+			ImGui::Text("Controllers: %d", m_uControllerCount);
+			ImGui::Separator();
+			if (ImGui::Button("Console"))
+				m_bGUI_Console ^= 1;
+			ImGui::SameLine();
+			if (ImGui::Button("Controller"))
+				m_bGUI_Controller ^= 1;
+			ImGui::SameLine();
+			if (ImGui::Button("ImGui - Test Window"))
+				m_bGUI_Test ^= 1;
+			//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+			//ImGui::ColorEdit3("color", (float*)&v4ClearColor);
+		}
+		ImGui::End();
+	}
+	
+	//Credits
+	if (m_bGUI_Console)
+	{
+		static ConsoleAndLog ConsoleLog;
+		ImGui::SetNextWindowPos(ImVec2(1, 152), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(315, 452), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowCollapsed(false, ImGuiSetCond_FirstUseEver);
+		String sLogWindow = m_pSystem->GetAppName() + " - Command";
+		String output = ConsoleLog.Draw(sLogWindow.c_str());
+		if (output != "")
+		{
+			std::cout << output << std::endl;
+			output = ToUpperCase(output);
+			if (output == "PLAY")
+				m_sound.play();
+		}
+	}
+
+	//Controller Debugger
+	if (m_bGUI_Controller)
+	{
+		ImGui::SetNextWindowPos(ImVec2(1088, 1), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(190,641), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowCollapsed(false, ImGuiSetCond_FirstUseEver);
+		String sWindowName = m_pSystem->GetAppName() + " - Controller";
+		window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar;
+		ImGui::Begin(sWindowName.c_str(), (bool*)0, window_flags);
+		if (sf::Joystick::isConnected(m_uActCont))
+		{
+			sf::Joystick::Identification joyID = sf::Joystick::getIdentification(m_uActCont);
+			ImGui::Text("Control   : %s", joyID.name.toAnsiString().c_str());
+			ImGui::Text("Product ID: %d", joyID.productId);
+			ImGui::Text("Vendor ID : %d", joyID.vendorId);
+			// How many buttons does joystick #0 support?
+			unsigned int buttons = sf::Joystick::getButtonCount(m_uActCont);
+			ImGui::Text("Buttons: %d", buttons);
+			//ImGui::TextColored(v4Color, "-------------------------------------------");
+			ImGui::TextColored(v4Color, "-------------------------");
+			ImGui::Text("		Key  A: %d", m_pController[m_uActCont]->button[SimplexKey_A]);
+			ImGui::Text("		Key  B: %d", m_pController[m_uActCont]->button[SimplexKey_B]);
+			ImGui::Text("		Key  X: %d", m_pController[m_uActCont]->button[SimplexKey_X]);
+			ImGui::Text("		Key  Y: %d", m_pController[m_uActCont]->button[SimplexKey_Y]);
+			ImGui::TextColored(v4Color, "---                   ---");
+			ImGui::Text("		Select: %d", m_pController[m_uActCont]->button[SimplexKey_Select]);
+			ImGui::Text("		Start : %d", m_pController[m_uActCont]->button[SimplexKey_Start]);
+			ImGui::TextColored(v4Color, "---                   ---");
+			ImGui::Text("		Key L1: %d", m_pController[m_uActCont]->button[SimplexKey_L1]);
+			ImGui::Text("		Key R1: %d", m_pController[m_uActCont]->button[SimplexKey_R1]);
+			ImGui::TextColored(v4Color, "-                       -");
+			ImGui::Text("		Key L2: %d", m_pController[m_uActCont]->button[SimplexKey_L2]);
+			ImGui::Text("		Key R2: %d", m_pController[m_uActCont]->button[SimplexKey_R2]);
+			ImGui::TextColored(v4Color, "-                       -");
+			ImGui::Text("		Key L3: %d", m_pController[m_uActCont]->button[SimplexKey_L3]);
+			ImGui::Text("		Key R3: %d", m_pController[m_uActCont]->button[SimplexKey_R3]);
+			ImGui::TextColored(v4Color, "---                   ---");
+			ImGui::Text("		Pad   : %d", m_pController[m_uActCont]->button[SimplexKey_Pad]);
+			ImGui::Text("		Gen  0: %d", m_pController[m_uActCont]->button[SimplexKey_G0]);
+			ImGui::Text("		Gen  1: %d", m_pController[m_uActCont]->button[SimplexKey_G0]);
+			ImGui::TextColored(v4Color, "-------------------------");
+			ImGui::Text("	DPad X: %f", m_pController[m_uActCont]->axis[SimplexAxis_POVX]);
+			ImGui::Text("	DPad Y: %f", m_pController[m_uActCont]->axis[SimplexAxis_POVY]);
+			ImGui::TextColored(v4Color, "-                       -");
+			ImGui::Text("	X-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_X]);
+			ImGui::Text("	Y-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_Y]);
+			ImGui::TextColored(v4Color, "-                       -");
+			ImGui::Text("	U-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_U]);
+			ImGui::Text("	V-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_V]);
+			ImGui::TextColored(v4Color, "-                       -");
+			ImGui::Text("	L-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_L]);
+			ImGui::Text("	R-Axis: %f", m_pController[m_uActCont]->axis[SimplexAxis_R]);
+		}
+		ImGui::End();
+	}
+	
+	//Examples
+	if (m_bGUI_Test)
+	{
+		ImGui::SetNextWindowPos(ImVec2(318, 1), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(550, 720), ImGuiSetCond_FirstUseEver);
+		ImGui::ShowTestWindow(&m_bGUI_Test);
 	}
 
 	// Rendering

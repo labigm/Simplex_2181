@@ -10,26 +10,21 @@ Date: 2017/06
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
-#include "MyEntityManager.h"
-
 namespace Simplex
 {
 	//Adding Application to the Simplex namespace
 class Application
 {
-	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager
-
+	Simplex::Model* m_pModel = nullptr; //Model to try
 private:
 	static ImGuiObject gui; //GUI object
 	bool m_bGUI_Main = true; //show Main GUI window?
-	bool m_bGUI_Console = false; //show Credits GUI window?
+	bool m_bGUI_Console = true; //show Credits GUI window?
 	bool m_bGUI_Test = false; //show Test GUI window?
 	bool m_bGUI_Controller = false; //show Controller GUI window?
 
 	uint m_uRenderCallCount = 0; //count of render calls per frame
 	uint m_uControllerCount = 0; //count of controllers connected
-
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 	bool m_bFocused = true; //is the window focused?
 

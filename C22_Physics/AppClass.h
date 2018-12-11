@@ -14,21 +14,22 @@ Date: 2017/06
 
 namespace Simplex
 {
-//Adding Application to the Simplex namespace
+	//Adding Application to the Simplex namespace
 class Application
 {
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager
-private:
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
 
+private:
 	static ImGuiObject gui; //GUI object
 	bool m_bGUI_Main = true; //show Main GUI window?
-	bool m_bGUI_Console = true; //show Credits GUI window?
+	bool m_bGUI_Console = false; //show Credits GUI window?
 	bool m_bGUI_Test = false; //show Test GUI window?
 	bool m_bGUI_Controller = false; //show Controller GUI window?
 
 	uint m_uRenderCallCount = 0; //count of render calls per frame
 	uint m_uControllerCount = 0; //count of controllers connected
+
+	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 	bool m_bFocused = true; //is the window focused?
 
@@ -36,11 +37,11 @@ private:
 
 	vector3 m_v3Mouse = vector3(); //position of the mouse in the window
 	bool m_bFPC = false;// First Person Camera flag
-	bool m_bArcBall = false;// ArcBall flag
+	bool m_bArcBall = false;// Arcball flag
 	quaternion m_qArcBall; //ArcBall quaternion
 
 	vector4 m_v4ClearColor; //Color of the scene
-	bool m_bRunning = false; //Is App running?
+	bool m_bRunning = false; //Is app running?
 	bool m_bModifier = false; //is shift pressed?
 
 	sf::Window* m_pWindow = nullptr; //SFML window
@@ -48,7 +49,6 @@ private:
 	LightManager* m_pLightMngr = nullptr; //Light Manager of the system
 	MeshManager* m_pMeshMngr = nullptr; //Mesh Manager
 	CameraManager* m_pCameraMngr = nullptr; //Singleton for the camera manager
-	
 	ControllerInput* m_pController[8]; //Controller
 	uint m_uActCont = 0; //Active Controller of the Application
 
@@ -330,8 +330,8 @@ private:
 
 #endif //__APPLICATIONCLASS_H_
 
- /*
- USAGE:
- ARGUMENTS: ---
- OUTPUT: ---
- */
+/*
+USAGE:
+ARGUMENTS: ---
+OUTPUT: ---
+*/
