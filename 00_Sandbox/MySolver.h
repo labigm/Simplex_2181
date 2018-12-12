@@ -17,6 +17,7 @@ namespace Simplex
 		vector3 m_v3Position = ZERO_V3; //Position of the MySolver
 		vector3 m_v3Size = vector3(1.0f); //Size of the MySolver
 		vector3 m_v3Velocity = ZERO_V3; //Velocity of the MySolver
+		quaternion m_qOrientation = quaternion(); //orientation of the MySolver
 		float m_fMass = 1.0f; //Mass of the solver
 		bool m_bIsCollding = false; //Is Solver colliding with any object?
 	public:
@@ -70,6 +71,19 @@ namespace Simplex
 		OUTPUT: position of the solver
 		*/
 		vector3 GetPosition(void);
+
+		/*
+		USAGE: Sets the orientation of the solver
+		ARGUMENTS: quaternion a_qOrientation -> orientation to set
+		OUTPUT: ---
+		*/
+		void SetOrientation(quaternion a_qOrientation);
+		/*
+		USAGE: Gets the orientation of the solver
+		ARGUMENTS: ---
+		OUTPUT: orientation of the solver
+		*/
+		quaternion GetOrientation(void);
 
 		/*
 		USAGE: Sets the Size of the solver

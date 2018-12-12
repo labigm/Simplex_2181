@@ -5,6 +5,7 @@ void MySolver::Init(void)
 {
 	m_v3Acceleration = ZERO_V3;
 	m_v3Position = ZERO_V3;
+	m_qOrientation = quaternion();
 	m_v3Velocity = ZERO_V3;
 	m_fMass = 1.0f;
 	m_bIsCollding = false;
@@ -42,6 +43,9 @@ MySolver::~MySolver() { Release(); }
 //Accessors
 void MySolver::SetPosition(vector3 a_v3Position) { m_v3Position = a_v3Position; }
 vector3 MySolver::GetPosition(void) { return m_v3Position; }
+
+void MySolver::SetOrientation(quaternion a_qOrientation) { m_qOrientation = a_qOrientation; }
+quaternion MySolver::GetOrientation(void) { return m_qOrientation; }
 
 void MySolver::SetSize(vector3 a_v3Size) { m_v3Size = a_v3Size; }
 vector3 MySolver::GetSize(void) { return m_v3Size; }

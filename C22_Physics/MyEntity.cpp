@@ -9,26 +9,31 @@ uint Simplex::MyEntity::GetCollidingCount(void) { return m_pRigidBody->GetCollid
 matrix4 Simplex::MyEntity::GetModelMatrix(void){ return m_m4ToWorld; }
 void Simplex::MyEntity::SetModelMatrix(matrix4 a_m4ToWorld)
 {
-	if (!m_bInMemory)
+	if (!m_bInMemory || m_m4ToWorld == a_m4ToWorld)
 		return;
 
 	m_m4ToWorld = a_m4ToWorld;
 	m_pModel->SetModelMatrix(m_m4ToWorld);
 	m_pRigidBody->SetModelMatrix(m_m4ToWorld);
 
-	//experimental way of calculating a matrix components
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	glm::decompose(m_m4ToWorld, scale, rotation, translation, skew, perspective);
+	if (m_bUsePhysicsSolver) {
+		//experimental way of calculating a matrix components
+		glm::vec3 scale;
+		glm::quat orientation;
+		glm::vec3 translation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(m_m4ToWorld, scale, orientation, translation, skew, perspective);
 
-	m_pSolver->SetPosition(translation);
-	m_pSolver->SetSize(scale);
+		//TODO: this is a hot fix the orientation inverses itself without this using the decompose
+		matrix4 temp = glm::translate(translation) * ToMatrix4(orientation) * glm::scale(scale);
+		glm::decompose(temp, scale, orientation, translation, skew, perspective);
+		//....
 
-	//m_pSolver->SetPosition(vector3(m_m4ToWorld[3]));
-
+		m_pSolver->SetPosition(translation);
+		m_pSolver->SetOrientation(orientation);
+		m_pSolver->SetSize(scale);
+	}
 }
 Model* Simplex::MyEntity::GetModel(void){return m_pModel;}
 MyRigidBody* Simplex::MyEntity::GetRigidBody(void){	return m_pRigidBody; }
@@ -313,7 +318,10 @@ void Simplex::MyEntity::Update(void)
 			m_pSolver->SetIsColliding(true);
 
 		m_pSolver->Update();
-		SetModelMatrix(glm::translate(m_pSolver->GetPosition()) * glm::scale(m_pSolver->GetSize()));
+
+		//SetModelMatrix(glm::translate(m_pSolver->GetPosition()) * glm::scale(m_pSolver->GetSize()));
+		quaternion temp = m_pSolver->GetOrientation();
+		SetModelMatrix(glm::translate(m_pSolver->GetPosition()) * ToMatrix4(temp) *  glm::scale(m_pSolver->GetSize()));
 	}
 }
 void Simplex::MyEntity::ResolveCollision(MyEntity* a_pOther)
